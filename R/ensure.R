@@ -127,6 +127,7 @@ ensure_removed_default_namespace <- function() {
 #' @importFrom here here
 #' @importFrom renv activate
 #' @importFrom withr with_envvar
+#' @export
 ensure_renv_active <- function(upgrade = TRUE) {
   usethis:::check_installed("renv")
 
@@ -158,6 +159,7 @@ ensure_renv_active <- function(upgrade = TRUE) {
 #' @importFrom here here
 #' @importFrom renv upgrade
 #' @importFrom withr with_envvar
+#' @export
 ensure_renv_upgraded <- function() {
   usethis:::check_installed("renv")
 
@@ -220,6 +222,7 @@ ensure_readme_rmd <- function(
   modify_readme()
 }
 
+#' @export
 ensure_knit_readme <- function() {
   suppressMessages(knit_readme())
   TRUE
@@ -317,6 +320,7 @@ ensure_news_md <- function() {
 # Ensure markdown in roxygen code -----------------------------------------
 
 #' @importFrom usethis use_roxygen_md
+#' @export
 ensure_roxygen_md <- function(
   install_deps_if_missing = TRUE,
   add_to_description_suggests = TRUE
@@ -345,6 +349,7 @@ ensure_roxygen_md <- function(
 # Ensure NAMESPACE by roxygen2 --------------------------------------------
 
 #' @importFrom roxygen2 roxygenize
+#' @export
 ensure_roxygen_namespace <- function(
   install_deps_if_missing = TRUE
 ) {
@@ -374,6 +379,7 @@ ensure_roxygen_namespace <- function(
 #' @importFrom fs path
 #' @importFrom stringr str_glue
 #' @importFrom usethis use_lifecycle use_lifecycle_badge
+#' @export
 ensure_lifecycle <- function(
   install_deps_if_missing = TRUE,
   add_to_description_suggests = TRUE
@@ -431,6 +437,7 @@ ensure_lifecycle <- function(
 # Ensure GitHub remote ----------------------------------------------------
 
 #' @importFrom usethis use_git
+#' @export
 ensure_github <- function(
   install_deps_if_missing = TRUE,
   add_to_description_suggests = TRUE,
@@ -469,6 +476,7 @@ ensure_github <- function(
 # Ensure GitHub Actions ---------------------------------------------------
 
 #' @importFrom usethis use_github_action_check_standard
+#' @export
 ensure_github_actions <- function(
   install_deps_if_missing = TRUE,
   add_to_description_suggests = TRUE
@@ -495,6 +503,7 @@ ensure_github_actions <- function(
 # Ensure test coverage ----------------------------------------------------
 
 #' @importFrom usethis use_coverage
+#' @export
 ensure_coverage <- function(
   install_deps_if_missing = TRUE,
   add_to_description_suggests = TRUE
@@ -527,6 +536,7 @@ ensure_coverage <- function(
 # Ensure {pkgedown} -------------------------------------------------------
 
 #' @importFrom usethis use_pkgdown use_github_action
+#' @export
 ensure_pkgdown <- function(
   install_deps_if_missing = TRUE,
   add_to_description_suggests = TRUE
@@ -563,6 +573,7 @@ ensure_pkgdown <- function(
 # Ensure vignette ---------------------------------------------------------
 
 #' @importFrom usethis use_vignette
+#' @export
 ensure_vignette <- function(
   install_deps_if_missing = TRUE,
   add_to_description_suggests = TRUE
@@ -597,6 +608,7 @@ ensure_vignette <- function(
 
 # Ensure ignore files state -----------------------------------------------
 
+#' @export
 ensure_renv_gitignore_state <- function(.strict = FALSE) {
   result <- try(
     c(
@@ -620,6 +632,7 @@ ensure_renv_gitignore_state <- function(.strict = FALSE) {
   )
 }
 
+#' @export
 ensure_rbuildignore_state <- function(.strict = FALSE) {
   result <- try(
     c(
@@ -653,6 +666,7 @@ ensure_rbuildignore_state <- function(.strict = FALSE) {
 
 # Ensure GitHub push ------------------------------------------------------
 
+#' @export
 ensure_github_push <- function(.strict = FALSE) {
   ensure_git_add_all(.strict = .strict)
   ensure_git_fetch(.strict = .strict)
@@ -665,6 +679,7 @@ ensure_github_push <- function(.strict = FALSE) {
 
 # Ensure good start -------------------------------------------------------
 
+#' @export
 ensure_good_start <- function() {
   output <- list()
 
@@ -731,6 +746,10 @@ ensure_good_start <- function() {
     ensure_renv_gitignore_state()
   output$ensure_rbuildignore_state <-
     ensure_rbuildignore_state()
+
+  # GitHub push:
+  output$ensure_github_push <-
+    ensure_github_push()
 
   output
 }
