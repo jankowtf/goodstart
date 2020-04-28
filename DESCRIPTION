@@ -1,0 +1,30 @@
+Package: goodstart
+Type: Package
+Title: Have a good start into package development
+Version: 0.0.0.9000
+Authors@R: person("Janko", "Thyson", email = "janko.thyson@rappster.io", 
+    role = c("aut", "cre"))
+Description: Provides convenience wrappers around best practice functionality 
+    of `{usethis}` to give you an initial package state where everything is set.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Suggests: 
+    testthat (>= 2.1.0),
+    rmarkdown,
+    roxygen2,
+    roxygen2md,
+    covr,
+    pkgdown,
+    renv
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.0
+Imports: 
+    lifecycle,
+    usethis,
+    gert,
+    here,
+    knitr,
+    stringr
+RdMacros: lifecycle
+VignetteBuilder: knitr
