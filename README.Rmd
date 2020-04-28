@@ -8,6 +8,7 @@ output: github_document
 knitr::opts_chunk$set(
   eval = FALSE,
   eval = FALSE,
+  eval = FALSE,
   collapse = TRUE,
   comment = "#>",
   fig.path = "man/figures/README-",
@@ -54,14 +55,14 @@ remotes::install_github("rappster/goodstart")
 
 Load the package
 
-```{r example}
+```{r, eval=TRUE}
 library(goodstart)
 ```
 
 Calling the following function will set you off to a good start:
 
-```{r cars}
-ensure_good_start()
+```{r, eval=TRUE}
+try(ensure_good_start())
 ```
 
 Also check the more fine granular `ensure_*` functions if you'd like more control over what's happening.

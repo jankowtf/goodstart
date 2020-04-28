@@ -595,6 +595,62 @@ ensure_vignette <- function(
   )
 }
 
+# Ensure ignore files state -----------------------------------------------
+
+ensure_renv_gitignore_state <- function(.strict = FALSE) {
+  result <- try(
+    c(
+      "library/",
+      "python/",
+      "staging/",
+      "cache/",
+      "cache_docker/",
+      "local/"
+    ) %>%
+      modify_ignore_file("renv/.gitignore", escape = FALSE)
+  )
+
+  out <- !inherits(result, "try-error")
+
+  handle_return_value(
+    out = out,
+    result = result,
+    message = "Ensurance of renv/.gitignore state failed",
+    .strict = .strict
+  )
+}
+
+ensure_rbuildignore_state <- function(.strict = FALSE) {
+  result <- try(
+    c(
+      "renv",
+      "renv.lock",
+      ".*.Rproj",
+      ".Rproj.user",
+      "README.Rmd",
+      "codecov.yml",
+      ".github",
+      "LICENSE.md",
+      "_pkgdown.yml",
+      "docs",
+      "pkgdown",
+      "data",
+      "scripts",
+      "build.R"
+    ) %>%
+      modify_ignore_file(".Rbuildignore", escape = TRUE)
+  )
+
+  out <- !inherits(result, "try-error")
+
+  handle_return_value(
+    out = out,
+    result = result,
+    message = "Ensurance of .Rbuildignore state failed",
+    .strict = .strict
+  )
+}
+
 # Ensure GitHub push ------------------------------------------------------
 
 ensure_github_push <- function(.strict = FALSE) {
@@ -669,6 +725,12 @@ ensure_good_start <- function() {
   # Ensure {pkgdown}:
   output$ensure_pkgdown <-
     ensure_pkgdown()
+
+  # Ignore files state:
+  output$ensure_renv_gitignore_state <-
+    ensure_renv_gitignore_state()
+  output$ensure_rbuildignore_state <-
+    ensure_rbuildignore_state()
 
   output
 }

@@ -102,7 +102,7 @@ renv::remove(package_name)
 
 # Knit README -------------------------------------------------------------
 
-ensure_knit_readme()
+# ensure_knit_readme()
 
 # Build -------------------------------------------------------------------
 
@@ -115,7 +115,7 @@ devtools::document()
 devtools::build(path = "renv/local")
 # install.packages(paste0(package_name, ".tar.gz"), repos = NULL, type="source")
 # renv::install(list.files(pattern = paste0(package_name, ".*\\.tar\\.gz")))
-
+ensure_knit_readme()
 # Create snapshot ---------------------------------------------------------
 
 # Important for making execution via bash shell possible!
@@ -163,15 +163,18 @@ dir.create("renv/cache_docker", recursive = TRUE, showWarnings = FALSE)
 
 # Ensure .gitignore content -----------------------------------------------
 
-c(
-  "cache/",
-  "cache_docker/",
-  "local/"
-) %>%
-  modify_ignore_file("renv/.gitignore", escape = FALSE)
+# c(
+#   "cache/",
+#   "cache_docker/",
+#   "local/"
+# ) %>%
+#   modify_ignore_file("renv/.gitignore", escape = FALSE)
+#
+# c(
+#   "scripts",
+#   "build.R"
+# ) %>%
+#   modify_ignore_file(".Rbuildignore", escape = TRUE)
 
-c(
-  "scripts",
-  "build.R"
-) %>%
-  modify_ignore_file(".Rbuildignore", escape = TRUE)
+ensure_renv_gitignore_state()
+ensure_rbuildignore_state()

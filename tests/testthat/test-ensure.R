@@ -862,6 +862,37 @@ test_that("{pkgdown}", {
   expect_true(any(check_results))
 })
 
+# Ensure ignore file state ------------------------------------------------
+
+context("Ignore files state")
+
+test_that("renv/.gitignore", {
+  # Testing function itself but suppressing shell output:
+  temp_file <- tempfile()
+  suppressWarnings(
+    verify_output(temp_file, {
+      is <- ensure_renv_gitignore_state()
+    })
+  )
+
+  should <- TRUE
+  expect_identical(is, should)
+  expect_true(fs::file_exists(usethis::proj_path("renv/.gitignore")))
+})
+
+test_that(".Rbuildignore", {
+  # Testing function itself but suppressing shell output:
+  temp_file <- tempfile()
+  suppressWarnings(
+    verify_output(temp_file, {
+      is <- ensure_rbuildignore_state()
+    })
+  )
+
+  should <- TRUE
+  expect_identical(is, should)
+})
+
 # Ensure github push ------------------------------------------------------
 
 context("Push to GitHub")
