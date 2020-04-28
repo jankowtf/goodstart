@@ -1,3 +1,9 @@
+# goodstart 0.0.0.9004
+
+- r-lib/usethis
+
+--------------------------------------------------------------------------------
+
 # goodstart 0.0.0.9003
 
 - GITHUB_USERNAME and {magrittr} dependency

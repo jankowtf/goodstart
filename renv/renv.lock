@@ -639,15 +639,15 @@
     },
     "usethis": {
       "Package": "usethis",
-      "Version": "1.6.0.9000",
+      "Version": "1.6.1",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteUsername": "r-lib",
       "RemoteRepo": "usethis",
       "RemoteRef": "master",
-      "RemoteSha": "2915cf55a3b614229c4fe6de6e98a61e81c80866",
-      "Hash": "ba28fa732d8cadd4df04eb3dbb3a1fb4"
+      "RemoteSha": "582a3fa886c042fe6c91376a6e4332df09a3db2a",
+      "Hash": "e7a59fce757005436b61d2f2e2916425"
     },
     "utf8": {
       "Package": "utf8",
