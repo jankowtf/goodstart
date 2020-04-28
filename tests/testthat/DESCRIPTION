@@ -1,7 +1,7 @@
 Package: goodstart
 Type: Package
 Title: Have a good start into package development
-Version: 0.0.0.9000
+Version: 0.0.0.9003
 Authors@R: person("Janko", "Thyson", email = "janko.thyson@rappster.io", 
     role = c("aut", "cre"))
 Description: Provides convenience wrappers around best practice functionality 

@@ -680,7 +680,13 @@ ensure_github_push <- function(.strict = FALSE) {
 # Ensure good start -------------------------------------------------------
 
 #' @export
-ensure_good_start <- function() {
+ensure_good_start <- function(
+  github_username = character()
+) {
+  library(magrittr)
+  ensure_env_vars(
+    list(GITHUB_USERNAME = github_username)
+  )
   output <- list()
 
   # Example files are removed:
