@@ -1,394 +1,490 @@
 # Environment variables ---------------------------------------------------
 
-ensure_env_vars(
-  list(
-    GITHUB_USERNAME = "rappster"
-  )
-)
+context("Preliminaries: environment variables")
 
 Sys.setenv("__GOODSTART_TESTING" = "TRUE")
 
 # Create temporary package ------------------------------------------------
 
-# usethis::proj_set(pkg)
-pkg <- scoped_temporary_package()
-
-if (FALSE) {
-  usethis::proj_path() %>%
-    fs::dir_ls()
-  usethis::proj_path("R") %>%
-    fs::dir_ls()
-}
-
-"man" %>%
-  usethis::proj_path() %>%
-  fs::dir_create()
+# test_that("Man directory exist", {
+#   current <- when_testing_ensure_man_dir()
+#   expect_true(current %>% fs::dir_exists())
+# })
 
 # usethis::use_testthat()
-handle_deps("r-hub/sysreqs", install_if_missing = TRUE)
+# handle_deps("r-hub/sysreqs", install_if_missing = TRUE)
 
 # Ensure some other stuff -------------------------------------------------
 
 ensure_package("praise")
 
+test_that("Package templates exist", {
+  current <- when_testing_copy_template("package-README")
+  expect_true(current %>% names() %>% fs::file_exists())
+  current <- when_testing_copy_template("package-BACKLOG")
+  expect_true(current %>% names() %>% fs::file_exists())
+})
+
 # Ensure to remove arbitrary file -----------------------------------------
 
 context("Removing arbitrary files")
 
-test_that("File is removed if it exists", {
-  # print(usethis::proj_path())
+test_that("Remove file if existing", {
+  pkg <- create_local_package()
+
   path <- "test"
   fs::file_create(usethis::proj_path(path))
 
   # Only seems to work when called interactively:
   if (FALSE) {
     expect_output(
-      is <- ensure_removed_file(usethis::proj_path(path)),
+      current <- ensure_removed_file(usethis::proj_path(path)),
       stringr::str_glue("Succesfully removed {usethis::proj_path(path)}") %>%
         stringr::str_replace("\\.", "\\\\.")
     )
   }
 
-  # Testing function itself:
-  temp_file <- tempfile()
-  suppressWarnings(
-    verify_output(temp_file, {
-      is <- ensure_removed_file(usethis::proj_path(path))
-    })
-  )
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_removed_file(path %>% usethis::proj_path())
+    )
 
-  should <- TRUE
-  expect_identical(is, should)
+  target <- TRUE
+  expect_identical(current, target)
+  expect_true(!fs::file_exists(path %>% usethis::proj_path()))
 
   # Testing output/messages:
-  is_output <- readLines(temp_file)
-  expect_match(
-    is_output %>% stringr::str_subset("Message"),
-    stringr::str_glue("Succesfully removed {usethis::proj_path(path)}") %>%
-      stringr::str_replace("\\.", "\\\\.")
+  result <- test_output(
+    path = path_temp,
+    expected = c(
+      stringr::str_glue("Succesfully removed {usethis::proj_path(path)}")
+    ),
+    any_all = "all",
+    escape = TRUE
   )
-})
-
-test_that("File is removed if it doesn't exist", {
-  path <- "tests/testthat/dummy.R"
-
-  # Only seems to work when called interactively:
-  if (FALSE) {
-    expect_output(
-      is <- ensure_removed_file(usethis::proj_path(path)),
-      stringr::str_glue("{usethis::proj_path(path)} was already removed") %>%
-        stringr::str_replace("\\.", "\\\\.")
-    )
+  expect_true(!inherits(result$result, "try-error"))
+  if (inherits(result$result, "try-error")) {
+    print(result)
   }
 
-  # Testing function itself:
-  temp_file <- tempfile()
-  suppressWarnings(
-    verify_output(temp_file, {
-      is <- ensure_removed_file(usethis::proj_path(path))
-    })
-  )
+  # withr::deferred_run()
+})
 
-  should <- TRUE
-  expect_identical(is, should)
+test_that("Remove file that isn't existing", {
+  pkg <- create_local_package()
+
+  path <- "tests/testthat/dummy.R"
+
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_removed_file(path %>% usethis::proj_path())
+    )
+
+  target <- TRUE
+  expect_identical(current, target)
+  expect_true(!fs::file_exists(path %>% usethis::proj_path()))
 
   # Testing output/messages:
-  is_output <- readLines(temp_file)
-  expect_match(
-    is_output %>% stringr::str_subset("Message"),
-    stringr::str_glue("{usethis::proj_path(path)} was already removed") %>%
-      stringr::str_replace("\\.", "\\\\.")
+  result <- test_output(
+    path = path_temp,
+    expected = c(
+      stringr::str_glue("{usethis::proj_path(path)} was already removed")
+    ),
+    any_all = "all",
+    escape = TRUE
   )
+  expect_true(!inherits(result$result, "try-error"))
+  if (inherits(result$result, "try-error")) {
+    print(result)
+  }
 })
 
 # Remove R/hello.R --------------------------------------------------------
 
 context("Removing R/hello.R")
 
-test_that("R/hello.R is removed if it exists", {
-  path <- "R/hello.R"
-  fs::file_create(usethis::proj_path(path))
+test_that("Remove R/hello.R if existing", {
+  pkg <- create_local_package()
 
-  # Seems to only work when called interactively:
-  if (FALSE) {
-    expect_output(
-      is <- ensure_removed_hello_r(),
-      "Succesfully removed R/hello\\.R"
+  hello <- "R/hello.R" %>% usethis::proj_path()
+  hello %>% fs::file_create()
+
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_removed_hello_r()
     )
-  }
 
-  # Testing function itself:
-  temp_file <- tempfile()
-  suppressWarnings(
-    verify_output(temp_file, {
-      is <- ensure_removed_hello_r()
-    })
-  )
-
-  should <- TRUE
-  expect_identical(is, should)
+  target <- TRUE
+  expect_identical(current, target)
+  expect_true(!hello %>% fs::file_exists())
 
   # Testing output/messages:
-  is_output <- readLines(temp_file)
-  expect_match(
-    is_output %>% stringr::str_subset("Message"),
-    "Succesfully removed R/hello\\.R"
+  result <- test_output(
+    path = path_temp,
+    expected = c(
+      "Succesfully removed R/hello.R"
+    ),
+    any_all = "all",
+    escape = TRUE
   )
+  expect_true(!inherits(result$result, "try-error"))
+  if (inherits(result$result, "try-error")) {
+    print(result)
+  }
 })
 
-test_that("R/hello.R is removed if it doesn't exist", {
-  # Seems to only work interactively:
-  if (FALSE) {
-    expect_output(
-      is <- ensure_removed_hello_r(),
-      "R/hello\\.R was already removed"
+test_that("Remove R/hello.R if not existing", {
+  pkg <- create_local_package()
+
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_removed_hello_r()
     )
-    should <- TRUE
-    expect_identical(is, should)
-  }
 
-  # Testing function itself:
-  temp_file <- tempfile()
-  suppressWarnings(
-    verify_output(temp_file, {
-      is <- ensure_removed_hello_r()
-    })
-  )
-
-  should <- TRUE
-  expect_identical(is, should)
+  target <- TRUE
+  expect_identical(current, target)
+  hello <- "R/hello.R" %>% usethis::proj_path()
+  expect_true(!hello %>% fs::file_exists())
 
   # Testing output/messages:
-  is_output <- readLines(temp_file)
-  expect_match(
-    is_output %>% stringr::str_subset("Message"),
-    "R/hello\\.R was already removed"
+  result <- test_output(
+    path = path_temp,
+    expected = c(
+      "R/hello.R was already removed"
+    ),
+    any_all = "all",
+    escape = TRUE
   )
+  expect_true(!inherits(result$result, "try-error"))
+  if (inherits(result$result, "try-error")) {
+    print(result)
+  }
 })
 
 # Remove man/hello.Rd -----------------------------------------------------
 
 context("Removing man/hello.Rd")
 
-test_that("man/hello.Rd is removed if it exists", {
+test_that("Remove 'man/hello.Rd' if existing", {
+  pkg <- create_local_package()
+
   path <- "man/hello.Rd"
-  fs::file_create(usethis::proj_path(path))
+  hello <- path %>%
+    usethis::proj_path()
+  hello %>%
+    fs::path_dir() %>%
+    fs::dir_create()
+  hello %>%
+    fs::path_dir() %>%
+    fs::dir_exists()
+  hello %>%
+    fs::file_create()
 
-  # Seems to only work when called interactively:
-  if (FALSE) {
-    expect_output(
-      is <- ensure_removed_hello_rd(),
-      "Succesfully removed man/hello\\.Rd"
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_removed_hello_rd()
     )
-    should <- TRUE
-    expect_identical(is, should)
-  }
 
-  # Testing function itself:
-  temp_file <- tempfile()
-  suppressWarnings(
-    verify_output(temp_file, {
-      is <- ensure_removed_hello_rd()
-    })
-  )
-
-  should <- TRUE
-  expect_identical(is, should)
+  target <- TRUE
+  expect_identical(current, target)
+  expect_true(!hello %>% fs::file_exists())
 
   # Testing output/messages:
-  is_output <- readLines(temp_file)
-  expect_match(
-    is_output %>% stringr::str_subset("Message"),
-    "Succesfully removed man/hello\\.Rd"
+  result <- test_output(
+    path = path_temp,
+    expected = c(
+      "Succesfully removed man/hello.Rd"
+    ),
+    any_all = "all",
+    escape = TRUE
   )
+  expect_true(!inherits(result$result, "try-error"))
+  if (inherits(result$result, "try-error")) {
+    print(result)
+  }
 })
 
-test_that("man/hello.Rd is removed if it doesn't exist", {
-  # Only seems to work when called interactively:
-  if (FALSE) {
-    expect_output(
-      is <- ensure_removed_hello_rd(),
-      "man/hello\\.Rd was already removed"
+test_that("Remove 'man/hello.Rd' if not existing", {
+  pkg <- create_local_package()
+
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_removed_hello_rd()
     )
-    should <- TRUE
-    expect_identical(is, should)
-  }
 
-  # Testing function itself:
-  temp_file <- tempfile()
-  suppressWarnings(
-    verify_output(temp_file, {
-      is <- ensure_removed_hello_rd()
-    })
-  )
-
-  should <- TRUE
-  expect_identical(is, should)
+  target <- TRUE
+  expect_identical(current, target)
+  hello <- "R/hello.R" %>% usethis::proj_path()
+  expect_true(!hello %>% fs::file_exists())
 
   # Testing output/messages:
-  is_output <- readLines(temp_file)
-  expect_match(
-    is_output %>% stringr::str_subset("Message"),
-    "man/hello\\.Rd was already removed"
+  result <- test_output(
+    path = path_temp,
+    expected = c(
+      "man/hello.Rd was already removed"
+    ),
+    any_all = "all",
+    escape = TRUE
   )
+  expect_true(!inherits(result$result, "try-error"))
+  if (inherits(result$result, "try-error")) {
+    print(result)
+  }
 })
 
-# R/foo.R -----------------------------------------------------------------
+# Ensure README -----------------------------------------------------------
 
-context("Ensuring R/foo.R")
+context("Ensure README: rmd (default)")
 
-test_that("R/hello.R is removed if it exists", {
-  path <- "R/foo.R"
-  fs::file_create(usethis::proj_path(path))
-  expr <-
-'#\' Hello world
-#\' @param x Hello world
-#\' @export
-#\' @example
-#\' foo()
-foo <- function(x = "hello world") x
-'
-  expr %>% write(usethis::proj_path(path))
+test_that("Ensure README if not existing (default -> rmd)", {
+  pkg <- create_local_package()
+  when_testing_copy_template("package-README")
 
-  usethis::use_test("foo")
+  readme <- usethis::proj_path("README.Rmd")
+  readme %>%
+    ensure_removed_file()
+  # readme %>%
+  #   fs::file_exists()
 
-  expect_true(fs::file_exists(usethis::proj_path(path)))
+  # Temporarily actually load the test package
+  when_testing_load_local_package()
+
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_readme(open = FALSE, strict = TRUE)
+    )
+
+  target <- TRUE
+  expect_identical(current, target)
+  expect_true(fs::file_exists(readme))
+
+  # Testing output/messages
+  result <- test_output(
+    path = path_temp,
+    expected = expected_messages_ensure_readme_rmd(escape = TRUE),
+    any_all = "all",
+    escape = FALSE
+  )
+  expect_true(!inherits(result$result, "try-error"))
+  if (inherits(result$result, "try-error")) {
+    print(result)
+  }
 })
 
+test_that("Ensure README if existing: rmd (default)", {
+  pkg <- create_local_package()
+  when_testing_copy_template("package-README")
 
-# DESCRIPTION -------------------------------------------------------------
+  readme <- usethis::proj_path("README.Rmd")
+  readme %>%
+    ensure_removed_file()
 
-context("Modify DESCRIPTION")
+  # Temporarily actually load the test package
+  when_testing_load_local_package()
+  ensure_readme(open = FALSE)
 
-test_that("Modify DESCRIPTION: license", {
-  # Testing function itself but suppressing shell output:
-  temp_file <- tempfile()
-  suppressWarnings(
-    verify_output(temp_file, {
-      is <- ensure_gpl3_license()
-    })
-  )
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_readme(open = FALSE)
+    )
 
-  should <- TRUE
-  expect_identical(is, should)
+  target <- TRUE
+  expect_identical(current, target)
+  expect_true(fs::file_exists(readme))
 
   # Testing output/messages:
-  is_messages <- readLines(temp_file) %>%
-    stringr::str_subset("Message")
-  should_messages <- expectations_ensure_gpl3_license()
-  check_results <- should_messages %>%
-    purrr::map_lgl(
-      ~stringr::str_detect(is_messages, .x) %>%
-        any()
-    )
-  # expect_true(all(check_results))
-  expect_true(any(check_results))
+  result <- test_output(
+    path = path_temp,
+    expected = c(
+      "README.Rmd already exists"
+    ),
+    any_all = "all",
+    escape = TRUE
+  )
+  expect_true(!inherits(result$result, "try-error"))
+  if (inherits(result$result, "try-error")) {
+    print(result)
+  }
 })
 
-# NAMESPACE: remove default file ------------------------------------------
+context("Ensure README: md")
 
-context("NAMESPACE: remove default file")
+test_that("Ensure README.md if not existing", {
+  pkg <- create_local_package()
+  when_testing_copy_template("package-README.md")
 
-test_that("Default NAMESPACE is removed if it exists", {
-  "exportPattern(\"^[[:alpha:]]+\")" %>%
-    write(usethis::proj_path("NAMESPACE"))
+  readme <- usethis::proj_path("README.Rmd")
+  readme %>%
+    ensure_removed_file()
+  readme <- usethis::proj_path("README.md")
+  readme %>%
+    ensure_removed_file()
+  # readme %>%
+  #   fs::file_exists()
 
-  # Only seems to work when called interactively:
-  if (FALSE) {
-    expect_output(
-      is <- ensure_removed_default_namespace(),
-      "Succesfully removed NAMESPACE"
+  # Temporarily actually load the test package
+  when_testing_load_local_package()
+
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_readme(type = valid_readme_types("md"), open = FALSE, strict = TRUE)
     )
-    should <- TRUE
-    expect_identical(is, should)
-  }
 
-  # Testing function itself:
-  temp_file <- tempfile()
-  suppressWarnings(
-    verify_output(temp_file, {
-      is <- ensure_removed_default_namespace()
-    })
+  target <- TRUE
+  expect_identical(current, target)
+  expect_true(fs::file_exists(readme))
+
+  # Testing output/messages
+  result <- test_output(
+    path = path_temp,
+    expected = expected_messages_ensure_readme_md(escape = TRUE),
+    any_all = "all",
+    escape = FALSE
   )
+  expect_true(!inherits(result$result, "try-error"))
+  if (inherits(result$result, "try-error")) {
+    print(result)
+  }
+})
 
-  should <- TRUE
-  expect_identical(is, should)
+# Ensure license ----------------------------------------------------------
+
+context("Ensure license")
+
+test_that("Ensure GPL-3 license", {
+  pkg <- create_local_package()
+
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_license()
+    )
+
+  target <- TRUE
+  expect_identical(current, target)
+  target <- c(License = "GPL-3")
+  expect_identical(desc::desc_get("License"), target)
 
   # Testing output/messages:
-  is_output <- readLines(temp_file)
-  expect_match(
-    is_output %>% stringr::str_subset("Message"),
-    "Succesfully removed NAMESPACE"
+  result <- test_output(
+    path = path_temp,
+    expected = c(
+      "Setting License field in DESCRIPTION to 'GPL-3'",
+      "Writing 'LICENSE.md'",
+      "Adding '^LICENSE\\\\.md$' to '.Rbuildignore'"
+    ),
+    any_all = "all",
+    escape = TRUE
   )
+  expect_true(!inherits(result$result, "try-error"))
+  if (inherits(result$result, "try-error")) {
+    print(result)
+  }
 })
 
-test_that("Default NAMESPACE is removed if it doesn't exist", {
-  # Only seems to work when called interactively:
-  if (FALSE) {
-    expect_output(
-      is <- ensure_removed_default_namespace(),
-      "NAMESPACE was already removed"
+test_that("Ensure MIT license", {
+  pkg <- create_local_package()
+
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_license("mit")
     )
-  }
 
-  # Testing function itself:
-  temp_file <- tempfile()
-  suppressWarnings(
-    verify_output(temp_file, {
-      is <- ensure_removed_default_namespace()
-    })
-  )
-
-  should <- TRUE
-  expect_identical(is, should)
+  target <- TRUE
+  expect_identical(current, target)
+  target <- c(License = "MIT + file LICENSE")
+  expect_identical(desc::desc_get("License"), target)
 
   # Testing output/messages:
-  is_output <- readLines(temp_file)
-  expect_match(
-    is_output %>% stringr::str_subset("Message"),
-    "NAMESPACE was already removed"
+  result <- test_output(
+    path = path_temp,
+    expected = c(
+      "Setting License field in DESCRIPTION to 'MIT + file LICENSE'",
+      "Writing 'LICENSE.md'",
+      "Adding '^LICENSE\\\\.md$' to '.Rbuildignore'",
+      "Writing 'LICENSE'"
+    ),
+    any_all = "all",
+    escape = TRUE
   )
+  expect_true(!inherits(result$result, "try-error"))
+  if (inherits(result$result, "try-error")) {
+    print(result)
+  }
 })
 
-# Activate {renv} ---------------------------------------------------------------
+test_that("Ensure invalid license", {
+  skip("Not working as planned yet. Refactor 'test_and_record_output")
+  pkg <- create_local_package()
 
-context("{renv}")
-
-test_that("{renv} is activated", {
-  if (fs::dir_exists(usethis::proj_path("renv"))) {
-    usethis::proj_path("renv") %>%
-      fs::dir_delete()
-  }
-
-  # Only seems to work when called interactively:
-  if (FALSE) {
-    expect_output(
-      is <- ensure_renv_active(),
-      "Package \\{renv\\} activated"
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_license("abc", strict = TRUE)
     )
-    should <- TRUE
-    expect_identical(is, should)
-  }
 
-  # Testing function itself:
-  temp_file <- tempfile()
-  suppressWarnings(
-    verify_output(temp_file, {
-      res <- ensure_renv_active()
-    })
+  target <- TRUE
+  expect_identical(current, target)
+
+  # Testing output/messages:
+  result <- test_output(
+    path = path_temp,
+    expected = c(
+      "Setting License field in DESCRIPTION to 'MIT + file LICENSE'",
+      "Writing 'LICENSE.md'",
+      "Adding '^LICENSE\\\\.md$' to '.Rbuildignore'",
+      "Writing 'LICENSE'"
+    ),
+    any_all = "all",
+    escape = TRUE
   )
-  if (FALSE) {
-    usethis::proj_path() %>%
-      fs::dir_ls() #%>%
-    #   write(file = "/home/data/renv.txt")
+  expect_true(!inherits(result$result, "try-error"))
+  if (inherits(result$result, "try-error")) {
+    print(result)
   }
+})
 
-  is_output <- readLines(temp_file)
-  # is_output %>%
-  #   write(file = "/home/data/renv.txt")
+# Ensure dependency management --------------------------------------------
 
-  should <- TRUE
-  expect_identical(res, should)
+context("Ensure dependency management: {renv} (default)")
+
+test_that("Ensure dependency management: {renv} (default)", {
+  pkg <- create_local_package()
+
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_dependency_management()
+    )
+
+  target <- list(
+    ensure_renv_active = TRUE,
+    ensure_renv_upgraded = TRUE
+  )
+  expect_identical(current, target)
   expect_true(fs::dir_exists(usethis::proj_path("renv")))
   expect_true(fs::file_exists(usethis::proj_path(".Rprofile")))
   expect_identical(
@@ -396,184 +492,416 @@ test_that("{renv} is activated", {
     "source(\"renv/activate.R\")"
   )
 
-  # Testing output/messages:
-  is_output <- readLines(temp_file)
-  messages <- is_output %>%
-    stringr::str_subset("Message")
-  # is_output %>%
-  #   write(file = "/home/data/renv.txt")
-  # should <- if (length(messages) > 1) {
-  #   c(
-  #     "Failed to find installation of renv",
-  #     "Installing renv \\d.*",
-  #     "Done!",
-  #     "Successfully installed and loaded renv \\d.*",
-  #     "Package \\{renv\\} activated"
-  #   )
-  # } else {
-  #   "Package \\{renv\\} activated"
-  # }
-  # purrr::map2(
-  #   messages,
-  #   should,
-  #   ~expect_match(.x, .y)
-  # )
-
-  should <- "Package \\{renv\\} activated"
-  purrr::map2(
-    messages[length(messages)],
-    should,
-    ~expect_match(.x, .y)
+  # Testing output/messages
+  result <- test_output(
+    path = path_temp,
+    expected = c(
+      "Project.*loaded.*",
+      "Package .*renv.* activated"
+    ),
+    any_all = "any"#,
+    # escape = TRUE
   )
+  expect_true(!inherits(result$result, "try-error"))
+  if (inherits(result$result, "try-error")) {
+    print(result)
+  }
+})
+
+context("Dependency management: {renv} (explicit)")
+
+test_that("{renv} is activated", {
+  pkg <- create_local_package()
+
+  renv <- "renv" %>% usethis::proj_path()
+  if (renv %>% fs::dir_exists()) {
+    renv %>% fs::dir_delete()
+  }
+
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_renv_active()
+    )
+
+  target <- TRUE
+  expect_identical(current, target)
+  expect_true(fs::dir_exists(usethis::proj_path("renv")))
+  expect_true(fs::file_exists(usethis::proj_path(".Rprofile")))
+  expect_identical(
+    readLines(usethis::proj_path(".Rprofile")),
+    "source(\"renv/activate.R\")"
+  )
+
+  # Testing output/messages
+  result <- test_output(
+    path = path_temp,
+    expected = c(
+      "Project.*loaded.*",
+      "Package .*renv.* activated"
+    ),
+    any_all = "any"#,
+    # escape = TRUE
+  )
+  expect_true(!inherits(result$result, "try-error"))
+  if (inherits(result$result, "try-error")) {
+    print(result)
+  }
 })
 
 test_that("{renv} is upgraded", {
-  # skip("{renv}")
-  # Only seems to work when called interactively:
-  if (FALSE) {
-    expect_output(
-      is <- ensure_renv_upgraded(),
-      "Package \\{renv\\} upgraded"
-    )
+  pkg <- create_local_package()
+
+  renv <- "renv" %>% usethis::proj_path()
+  if (renv %>% fs::dir_exists()) {
+    renv %>% fs::dir_delete()
   }
+  ensure_renv_active()
 
-  # Testing function itself:
-  temp_file <- tempfile()
-  suppressWarnings(
-    verify_output(temp_file, {
-      is <- ensure_renv_upgraded()
-    })
-  )
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_renv_upgraded()
+    )
 
-  should <- TRUE
-  expect_identical(is, should)
+  target <- TRUE
+  expect_identical(current, target)
 
-  # Testing output/messages:
-  is_output <- readLines(temp_file)
-  purrr::map2(
-    is_output %>%
-      stringr::str_subset("Message"),
-    c(
-      "Package \\{renv\\} upgraded"
+  # Testing output/messages
+  result <- test_output(
+    path = path_temp,
+    expected = c(
+      "renv .* is already installed and active for this project",
+      "Package .*renv.* upgraded"
     ),
-    ~expect_match(.x, .y)
+    any_all = "any"#,
+    # escape = TRUE
   )
-})
-
-# Ensure README -----------------------------------------------------------
-
-context("Ensure README")
-
-test_that("Ensure README.Rmd exists", {
-  if (fs::file_exists(usethis::proj_path("README.Rmd"))) {
-    usethis::proj_path("README.Rmd") %>%
-      fs::file_delete()
-  }
-
-  # Testing function itself:
-  temp_file <- tempfile()
-  suppressWarnings(
-    verify_output(temp_file, {
-      is <- ensure_readme_rmd()
-    })
-  )
-
-  should <- TRUE
-  expect_identical(is, should)
-  expect_true(fs::file_exists(usethis::proj_path("README.Rmd")))
-
-  # Testing output/messages:
-  is_output <- readLines(temp_file)
-  # is_output %>%
-  #   write(file = "/home/data/tmp.txt")
-  messages <- is_output %>%
-    stringr::str_subset("Message")
-  should <- if (length(messages) > 2) {
-    c(
-      "Writing 'README\\.Rmd'",
-      "Adding '^README.*",
-      "Modify 'README.*'"
-    )
-  } else {
-
+  expect_true(!inherits(result$result, "try-error"))
+  if (inherits(result$result, "try-error")) {
+    print(result)
   }
 })
 
-test_that("README.Rmd exists (2)", {
-  # Testing function itself:
-  temp_file <- tempfile()
-  suppressWarnings(
-    verify_output(temp_file, {
-      is <- ensure_readme_rmd()
-    })
-  )
+# Ensure unit testing -----------------------------------------------------
 
-  should <- TRUE
-  expect_identical(is, should)
-  expect_true(fs::file_exists(usethis::proj_path("README.Rmd")))
+context("Ensure unit testing")
+
+test_that("Ensure unit testing with defaults", {
+  pkg <- create_local_package()
+
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_unit_testing()
+    )
+
+  target <- TRUE
+  expect_identical(current, target)
+  expect_true(fs::dir_exists(usethis::proj_path("tests/testthat")))
 
   # Testing output/messages:
-  is_output <- readLines(temp_file)
-  purrr::map2(
-    is_output %>%
-      stringr::str_subset("Message"),
-    c(
-      "README\\.Rmd already exists"
+  result <- test_output(
+    path = path_temp,
+    expected = c(
+      "Adding 'testthat' to Suggests field in DESCRIPTION",
+      "Creating 'tests/testthat/'",
+      "Writing 'tests/testthat.R'",
+      "Call `use_test()` to initialize a basic test file and open it for editing."
     ),
-    ~expect_match(.x, .y)
+    any_all = "all",
+    escape = TRUE
   )
+  expect_true(!inherits(result$result, "try-error"))
+  if (inherits(result$result, "try-error")) {
+    print(result)
+  }
+})
+
+test_that("Ensure {testthat}", {
+  pkg <- create_local_package()
+
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_unit_testing_testthat()
+    )
+
+  target <- TRUE
+  expect_identical(current, target)
+  expect_true(fs::dir_exists(usethis::proj_path("tests/testthat")))
+
+  # Testing output/messages:
+  result <- test_output(
+    path = path_temp,
+    expected = c(
+      "Adding 'testthat' to Suggests field in DESCRIPTION",
+      "Creating 'tests/testthat/'",
+      "Writing 'tests/testthat.R'",
+      "Call `use_test()` to initialize a basic test file and open it for editing."
+    ),
+    any_all = "all",
+    escape = TRUE
+  )
+  expect_true(!inherits(result$result, "try-error"))
+  if (inherits(result$result, "try-error")) {
+    print(result)
+  }
+})
+
+# Ensure unit testing: test coverage --------------------------------------
+
+context("Ensure unit testing: test coverage (local)")
+
+test_that("Ensure unit testing with defaults", {
+  pkg <- create_local_package()
+
+  ensure_unit_testing_testthat()
+  when_testing_ensure_example_function_and_unit_test()
+
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_unit_testing_test_coverage()
+    )
+
+  target <- TRUE
+  expect_identical(current, target)
+
+  # Testing output/messages:
+  result <- test_output(
+    path = path_temp,
+    expected = expected_messages_ensure_unit_testing_test_coverage(),
+    any_all = "all"
+  )
+  expect_true(!inherits(result$result, "try-error"))
+  if (inherits(result$result, "try-error")) {
+    print(result)
+  }
+})
+
+# Ensure unit testing: example function and test --------------------------
+
+context("Ensure unit testing: example fun and test")
+
+test_that("foo.R and test-foo.R", {
+  pkg <- create_local_package()
+
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      when_testing_ensure_example_function_and_unit_test()
+    )
+
+  target <- TRUE
+  expect_identical(current, target)
+
+  foo_test <- usethis::proj_path("tests/testthat/test-foo.R")
+  expect_true(foo_test %>% fs::file_access())
+
+  # Testing output/messages:
+  result <- test_output(
+    path = path_temp,
+    expected = c(
+      "Adding 'testthat' to Suggests field in DESCRIPTION",
+      "Creating 'tests/testthat/'",
+      "Writing 'tests/testthat.R'",
+      "Call `use_test()` to initialize a basic test file and open it for editing.",
+      " Writing 'tests/testthat/test-foo.R'",
+      "Edit 'tests/testthat/test-foo.R'"
+    ),
+    any_all = "all",
+    escape = TRUE
+  )
+  expect_true(!inherits(result$result, "try-error"))
+  if (inherits(result$result, "try-error")) {
+    print(result)
+  }
 })
 
 # Ensure NEWS -------------------------------------------------------------
 
 context("Ensure NEWS")
 
-test_that("NEWS.md exists", {
-  # Testing function itself:
-  temp_file <- tempfile()
-  suppressWarnings(
-    verify_output(temp_file, {
-      is <- ensure_news_md()
-    })
-  )
+test_that("Ensure NEWS.md", {
+  pkg <- create_local_package()
 
-  should <- TRUE
-  expect_identical(is, should)
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_news_md(open = FALSE)
+    )
+
+  target <- TRUE
+  expect_identical(current, target)
   expect_true(fs::file_exists(usethis::proj_path("NEWS.md")))
 
-  # Testing output/messages:s
-  is_output <- readLines(temp_file)
-  messages_should <- c(
-    "Writing 'NEWS\\.md'"#,
-    # "Modify 'NEWS\\.md'" # Only when interactive
+  # Testing output/messages
+  result <- test_output(
+    path = path_temp,
+    expected = c(
+      "Writing 'NEWS.md'"
+    ),
+    any_all = "all",
+    escape = TRUE
   )
-  messages_is <- is_output %>%
-    stringr::str_subset("Message")
-  # messages_is %>%
-  #   write("/home/data/news.txt")
-  check_results <- messages_should %>%
-    purrr::map_lgl(
-      ~stringr::str_detect(messages_is, .x) %>%
-        any()
+  expect_true(!inherits(result$result, "try-error"))
+  if (inherits(result$result, "try-error")) {
+    print(result)
+  }
+})
+
+test_that("Ensure NEWS.md if already existing", {
+  pkg <- create_local_package()
+
+  ensure_news_md(open = FALSE)
+
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_news_md(open = FALSE)
     )
-  expect_true(all(check_results))
+  # TODO-20200502T1642: This target be FALSE in case NEWS.md already exists
+
+  target <- TRUE
+  expect_identical(current, target)
+  expect_true(fs::file_exists(usethis::proj_path("NEWS.md")))
+
+  # Testing output/messages
+  result <- test_output(
+    path = path_temp,
+    expected = c(
+      # "Writing 'NEWS.md'"
+    ),
+    any_all = "all",
+    escape = TRUE
+  )
+  expect_true(!inherits(result$result, "try-error"))
+  if (inherits(result$result, "try-error")) {
+    print(result)
+  }
+})
+
+# Ensure BACKLOG ----------------------------------------------------------
+
+context("Ensure BACKLOG.Rmd")
+
+test_that("Ensure BACKLOG.Rmd: bare", {
+  skip("Keep for reference but doesn't need to run anymore")
+  if (fs::file_exists(usethis::proj_path("BACKLOG.Rmd"))) {
+    usethis::proj_path("BACKLOG.Rmd") %>%
+      fs::file_delete()
+  }
+
+  target <- TRUE
+
+  # withr::with(
+  #   "goodstarttest",
+  #   usethis:::find_template("package-BACKLOG", get_package_name())
+  # )
+  devtools::load_all(usethis::proj_path())
+  on.exit(devtools::unload("goodstarttest"))
+
+  show_failure(expect_identical(ensure_backlog_rmd(), target))
+  expect_true(fs::file_exists(usethis::proj_path("BACKLOG.Rmd")))
+})
+
+test_that("Ensure BACKLOG.Rmd", {
+  pkg <- create_local_package()
+
+  when_testing_copy_template("package-BACKLOG")
+  when_testing_load_local_package()
+
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_backlog_rmd(open = FALSE)
+    )
+
+  target <- TRUE
+  backlog <- "BACKLOG.Rmd" %>% usethis::proj_path()
+  # names(target) <- backlog
+  expect_identical(current, target)
+  expect_true(backlog %>% fs::file_exists())
+
+  # Testing output/messages
+  result <- test_output(
+    path = path_temp,
+    expected = c(
+      "Writing 'BACKLOG.Rmd'",
+      "Adding '^BACKLOG\\\\.Rmd$' to '.Rbuildignore'",
+      "Created BACKLOG.Rmd"
+    ),
+    any_all = "all",
+    escape = TRUE
+  )
+  expect_true(!inherits(result$result, "try-error"))
+  if (inherits(result$result, "try-error")) {
+    print(result)
+  }
+})
+
+# Ensure roxygen ----------------------------------------------------------
+
+context("Ensure roxygen")
+
+test_that("Enable roxygen", {
+  pkg <- create_local_package()
+
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_roxygen()
+    )
+
+  target <- TRUE
+  expect_identical(current, target)
+
+  # Testing output/messages
+  result <- test_output(
+    path = path_temp,
+    expected = c(
+      "Adding 'roxygen2' to Suggests field in DESCRIPTION",
+      # "Increasing 'roxygen2' version to '>= 7.1.0' in DESCRIPTION",
+      "Use `requireNamespace(\"roxygen2\", quietly = TRUE)` to test if package is installed",
+      "Then directly refer to functons like `roxygen2::fun()` (replacing `fun()`)."
+      # "Run `devtools::document()`"
+    ),
+    any_all = "all",
+    escape = TRUE
+  )
+  expect_true(!inherits(result$result, "try-error"))
+  if (inherits(result$result, "try-error")) {
+    print(result)
+  }
 })
 
 # Ensure markdown in roxygen ----------------------------------------------
 
-context("Markdown in {roxygen2} code")
+context("Ensure Markdown in {roxygen2} code")
 
-test_that("Markdown in roxygen2 code is enabled", {
-  # Testing function itself:
-  temp_file <- tempfile()
-  suppressWarnings(
-    verify_output(temp_file, {
-      is <- ensure_roxygen_md()
-    })
-  )
+test_that("Enable markdown in roxygen2 code", {
+  pkg <- create_local_package()
 
-  should <- TRUE
-  expect_identical(is, should)
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_roxygen_md()
+    )
+
+  target <- TRUE
+  expect_identical(current, target)
   description <- readLines(usethis::proj_path("DESCRIPTION"))
   expect_true(description %>%
       stringr::str_detect("Roxygen: list\\(markdown = TRUE\\)") %>%
@@ -583,20 +911,13 @@ test_that("Markdown in roxygen2 code is enabled", {
       stringr::str_detect("RoxygenNote: \\d.*") %>%
       any()
   )
-  # expect_true(description %>%
-  #     stringr::str_detect("roxygen2") %>%
-  #     any()
-  # )
-  # usethis::proj_path() %>%
-  #   fs::path("renv/library/R-3.6/x86_64-pc-linux-gnu/") %>%
-  #   fs::dir_ls()
 })
 
 # test_that("Markdown in roxygen2 code is enabled (2)", {
 #   skip("Not mandatory")
-#   is <- ensure_roxygen2md()
-#   should <- TRUE
-#   expect_identical(is, should)
+#   current <- ensure_roxygen2md()
+#   target <- TRUE
+#   expect_identical(current, target)
 #   description <- readLines(here::here("DESCRIPTION"))
 #   expect_true(description %>%
 #       stringr::str_detect("Roxygen: list\\(markdown = TRUE\\)") %>%
@@ -612,56 +933,153 @@ test_that("Markdown in roxygen2 code is enabled", {
 #   )
 # })
 
+# NAMESPACE: remove default file ------------------------------------------
+
+context("NAMESPACE: remove default file")
+
+test_that("Remove default NAMESPACE if existing", {
+  pkg <- create_local_package()
+
+  when_testing_namespace_default()
+
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_removed_namespace_default()
+    )
+
+  target <- TRUE
+  expect_identical(current, target)
+
+  # Testing output/messages
+  result <- test_output(
+    path = path_temp,
+    expected = c(
+      "Succesfully removed NAMESPACE"
+    ),
+    any_all = "all",
+    escape = TRUE
+  )
+  expect_true(!inherits(result$result, "try-error"))
+  if (inherits(result$result, "try-error")) {
+    print(result)
+  }
+})
+
+test_that("Remove default NAMESPACE if not existing", {
+  pkg <- create_local_package()
+
+  "exportPattern(\"^[[:alpha:]]+\")" %>%
+    write(usethis::proj_path("NAMESPACE"))
+
+  ensure_removed_namespace_default()
+
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_removed_namespace_default()
+    )
+
+  target <- TRUE
+  expect_identical(current, target)
+
+  # Testing output/messages
+  result <- test_output(
+    path = path_temp,
+    expected = c(
+      "NAMESPACE was already removed"
+    ),
+    any_all = "all",
+    escape = TRUE
+  )
+  expect_true(!inherits(result$result, "try-error"))
+  if (inherits(result$result, "try-error")) {
+    print(result)
+  }
+})
+
+test_that("Remove default NAMESPACE if not existing (2)", {
+  pkg <- create_local_package()
+
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_removed_namespace_default()
+    )
+
+  target <- FALSE
+  expect_identical(current, target)
+
+  # Testing output/messages
+  result <- test_output(
+    path = path_temp,
+    expected = c(
+      "NAMESPACE generated by {roxygen2}"
+    ),
+    any_all = "all",
+    escape = TRUE
+  )
+  expect_true(!inherits(result$result, "try-error"))
+  if (inherits(result$result, "try-error")) {
+    print(result)
+  }
+})
+
 # NAMESPACE: roxygen-based ------------------------------------------------
 
 context("NAMESPACE: roxygen2-based")
 
-test_that("Roxygen2-based NAMESPACE exists", {
-  # Testing function itself:
-  temp_file <- tempfile()
-  suppressWarnings(
-    verify_output(temp_file, {
-      is <- ensure_roxygen_namespace()
-    })
-  )
-  # is %>% write("/home/data/temp_roxygen_is.txt")
-  should <- TRUE
-  expect_identical(is, should)
+test_that("Ensure {roxygen2}-based NAMESPACE file", {
+  pkg <- create_local_package()
 
-  # Testing output/messages:
-  is_messages <- readLines(temp_file) %>%
-    stringr::str_subset("Message")
-  # is_messages %>% write("/home/data/temp_roxygen.txt")
-  should_messages <- expectations_ensure_roxygen_namespace()
-  check_results <- should_messages %>%
-    purrr::map_lgl(
-      ~stringr::str_detect(is_messages, .x) %>%
-        any()
+  "exportPattern(\"^[[:alpha:]]+\")" %>%
+    write("NAMESPACE" %>% usethis::proj_path())
+  ensure_removed_namespace_default()
+
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_roxygen_namespace()
     )
-  # expect_true(all(check_results))
-  expect_true(any(check_results))
 
-  # Check NAMESPACE content:
-  namespace <- readLines(usethis::proj_path("NAMESPACE"))
-  expect_true(namespace %>%
+  target <- TRUE
+  expect_identical(current, target)
+
+  # Check NAMESPACE content
+  namespace <- "NAMESPACE" %>% usethis::proj_path()
+  expect_true(namespace %>% fs::file_exists())
+  expect_true(
+    namespace %>%
+      readLines() %>%
       stringr::str_detect("# Generated by roxygen2: do not edit by hand") %>%
       any()
   )
-  expect_true(namespace %>%
-      stringr::str_detect("export(foo)" %>% handle_regex_escaping()) %>%
-      any()
+
+  # Testing output/messages
+  result <- test_output(
+    path = path_temp,
+    expected = expectations_ensure_roxygen_namespace(),
+    any_all = "any"
   )
+  expect_true(!inherits(result$result, "try-error"))
+  if (inherits(result$result, "try-error")) {
+    print(result)
+  }
 
   # Double check default NAMESPACE handling:
   temp_file <- tempfile()
   suppressWarnings(
     verify_output(temp_file, {
-      is <- ensure_removed_default_namespace()
+      current <- ensure_removed_namespace_default()
     })
   )
 
-  should <- FALSE
-  expect_identical(is, should)
+  target <- FALSE
+  expect_identical(current, target)
 
   is_messages <- readLines(temp_file) %>%
     stringr::str_subset("Message")
@@ -676,21 +1094,58 @@ test_that("Roxygen2-based NAMESPACE exists", {
   # expect_true(any(check_results))
 })
 
-# Ensure lifecycle package ------------------------------------------------
+test_that("Ensure {roxygen2}-based NAMESPACE file if already existing", {
+  pkg <- create_local_package()
 
-context("{lifecycle}")
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_roxygen_namespace()
+    )
 
-test_that("{lifecycle} exists", {
-  # Testing function itself:
-  temp_file <- tempfile()
-  suppressWarnings(
-    verify_output(temp_file, {
-      is <- ensure_lifecycle()
-    })
+  target <- TRUE
+  expect_identical(current, target)
+
+  # Check NAMESPACE content:
+  namespace <- readLines(usethis::proj_path("NAMESPACE"))
+  expect_true(namespace %>%
+      stringr::str_detect("# Generated by roxygen2: do not edit by hand") %>%
+      any()
   )
 
-  should <- TRUE
-  expect_identical(is, should)
+  # Testing output/messages
+  result <- test_output(
+    path = path_temp,
+    expected = stringr::str_glue("Loading {get_package_name()}"),
+    any_all = "all"
+  )
+  expect_true(!inherits(result$result, "try-error"))
+  if (inherits(result$result, "try-error")) {
+    print(result)
+  }
+})
+
+# Ensure {lifecycle} ------------------------------------------------------
+
+context("Ensure {lifecycle}")
+
+test_that("{lifecycle} exists", {
+  pkg <- create_local_package()
+
+  when_testing_copy_template("package-README")
+  when_testing_load_local_package()
+  ensure_readme_rmd(open = FALSE)
+
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_lifecycle()
+    )
+
+  target <- TRUE
+  expect_identical(current, target)
 
   # Check for content inside R/{package_name}-package.R:
   package_name <- get_package_name()
@@ -705,200 +1160,367 @@ test_that("{lifecycle} exists", {
     ) > 0
   )
 
-  # Check for lifecycle badge in README.Rmd:
-  readme <- usethis::proj_path("README.Rmd") %>%
-    readLines()
-  expect_true(
-    readme %>%
-      stringr::str_detect(
-        "https://www.tidyverse.org/lifecycle" %>%
-          handle_regex_escaping()
-      ) %>%
-      any()
+  # Testing output/messages
+  result <- test_output(
+    path = path_temp,
+    expected = c(
+      stringr::str_glue("Succesfully created .*/R/{package_name}-package\\.R"),
+      stringr::str_glue("Added '@importFrom lifecycle deprecate_soft' to 'R/{package_name}-package\\.R'")
+    ),
+    any_all = "all"
   )
+  expect_true(!inherits(result$result, "try-error"))
+  if (inherits(result$result, "try-error")) {
+    print(result)
+  }
 
-  # Testing output/messages:
-  is_messages <- readLines(temp_file) %>%
-    stringr::str_subset("Message")
-  should_messages <- expecations_ensure_lifecycle()
-  check_results <- should_messages %>%
-    purrr::map_lgl(
-      ~stringr::str_detect(is_messages, .x) %>%
+  if (FALSE) {
+    # Check for lifecycle badge in README.Rmd:
+    readme <- "README.Rmd" %>%
+      usethis::proj_path() %>%
+      readLines()
+    expect_true(
+      readme %>%
+        stringr::str_detect(
+          "https://www.tidyverse.org/lifecycle" %>%
+            handle_regex_escaping()
+        ) %>%
         any()
     )
-  # expect_true(all(check_results))
-  expect_true(any(check_results))
+
+    # Testing output/messages:
+    is_messages <- readLines(temp_file) %>%
+      stringr::str_subset("Message")
+    should_messages <- expecations_ensure_lifecycle()
+    check_results <- should_messages %>%
+      purrr::map_lgl(
+        ~stringr::str_detect(is_messages, .x) %>%
+          any()
+      )
+    # expect_true(all(check_results))
+    expect_true(any(check_results))
+  }
+  # TODO-20200503T0115: Align testing {lifecycle} behavior when README.Rmd exists
 })
 
 # GitHub ------------------------------------------------------------------
 
-context("GitHub")
+context("Ensure GitHub")
 
 test_that("GitHub is set up correctly", {
-  # is <- ensure_github()
-  is <- ensure_github(.strict = TRUE)
-  should <- TRUE
-  expect_identical(is, should)
-})
+  pkg <- create_local_package()
 
-test_that("GitHub actions", {
-  is <- ensure_github_actions()
-  should <- TRUE
-  expect_true(is == "restart" || is == should)
-})
-
-# Test coverage -----------------------------------------------------------
-
-context("Test coverage")
-
-test_that("Test coverage", {
-  # is <- ensure_coverage()
-
-  # Testing function itself but suppressing shell output:
-  temp_file <- tempfile()
-  suppressWarnings(
-    verify_output(temp_file, {
-      is <- ensure_coverage()
-    })
-  )
-
-  # is %>% write(file = "/home/data/temp_coverage.txt")
-  should <- TRUE
-  expect_identical(is, should)
-
-  # Testing output/messages:
-  is_messages <- readLines(temp_file) %>%
-    stringr::str_subset("Message")
-  # is_messages %>% write(file = "/home/data/temp_coverage.txt")
-  should_messages <- expectations_ensure_coverage()
-  check_results <- should_messages %>%
-    purrr::map_lgl(
-      ~stringr::str_detect(is_messages, .x) %>%
-        any()
+  ensure_env_vars(
+    list(
+      GITHUB_USERNAME = "rappster"
     )
-  # expect_true(all(check_results))
-  expect_true(any(check_results))
-})
-
-# Knit README -------------------------------------------------------------
-
-context("Knit README")
-
-test_that("Knit README", {
-  # is <- ensure_knit_readme()
-
-  # Testing function itself:
-  temp_file <- tempfile()
-  suppressWarnings(
-    verify_output(temp_file, {
-      is <- ensure_knit_readme()
-    })
   )
 
-  should <- TRUE
-  expect_identical(is, should)
+  # current <- ensure_github()
+  current <- ensure_github(strict = TRUE)
+  target <- TRUE
+  expect_identical(current, target)
+})
 
+# Ensure CI platform ------------------------------------------------------
+
+context("Ensure CI platform")
+
+test_that("Ensure CI platform: GitHub Actions (default)", {
+  pkg <- create_local_package()
+
+  # Ensure README
+  when_testing_copy_template("package-README")
+  when_testing_load_local_package()
+  ensure_readme_rmd(open = FALSE)
+
+  # Ensure GitHub
+  ensure_env_vars(
+    list(
+      GITHUB_USERNAME = "rappster"
+    )
+  )
+  ensure_github(strict = TRUE)
+
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_ci()
+    )
+
+  target <- TRUE
+  expect_identical(current, target)
+
+  # Check content of README.Rmd for badges
+  readme_content <- "README.Rmd" %>%
+    usethis::proj_path() %>%
+    read_utf8()
+  block_bounds <- readme_content %>%
+    block_find("<!-- badges: start -->", "<!-- badges: end -->")
+  badges_content <- readme_content %>%
+    block_get(block_bounds = block_bounds)
+  expect_true(
+    badges_content %>%
+      stringr::str_detect("R build status") %>%
+      any()
+  )
+
+  # Testing output/messages
+  result <- test_output(
+    path = path_temp,
+    expected = expected_messages_ensure_ci_github_actions(),
+    any_all = "all"
+  )
+  expect_true(!inherits(result$result, "try-error"))
+  if (inherits(result$result, "try-error")) {
+    print(result)
+  }
+})
+
+# Ensure CI test coverage service -----------------------------------------
+
+context("Ensure CI test coverage service")
+
+test_that("CI test coverage", {
+  pkg <- create_local_package()
+
+  ensure_env_vars(
+    list(
+      GITHUB_USERNAME = "rappster"
+    )
+  )
+
+  when_testing_load_local_package()
+  when_testing_copy_template("package-README")
+  ensure_readme_rmd(open = FALSE, strict = TRUE)
+  ensure_github()
+  ensure_github_actions()
+
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_ci_test_coverage_()
+    )
+
+  target <- TRUE
+  expect_identical(current, target)
+
+  # Check if workflow file exists
+  path <- ".github/workflows/R-CMD-check.yaml" %>%
+    fs::path()
+  expect_true(
+    path %>%
+      usethis::proj_path() %>%
+      fs::file_exists()
+  )
+  expect_true(
+    length(
+      readLines(path %>% usethis::proj_path())
+    ) > 0
+  )
+
+  # Testing output/messages
+  result <- test_output(
+    path = path_temp,
+    expected = expectations_ensure_test_coverage(escape = TRUE),
+    any_all = "all"
+  )
+  expect_true(!inherits(result$result, "try-error"))
+  if (inherits(result$result, "try-error")) {
+    print(result)
+  }
 })
 
 # Ensure vignettes --------------------------------------------------------
 
-context("Vignette setup")
+context("Ensure vignette setup")
 
 test_that("Vignette setup", {
-  # Testing function itself but suppressing shell output:
-  temp_file <- tempfile()
-  suppressWarnings(
-    verify_output(temp_file, {
-      is <- ensure_vignette()
-    })
-  )
+  pkg <- create_local_package()
 
-  # is %>% write(file = "/home/data/test_ensure_vignette_is.txt")
-  should <- TRUE
-  expect_identical(is, should)
-
-  # Testing output/messages:
-  is_messages <- readLines(temp_file) %>%
-    stringr::str_subset("Message")
-  # is_messages %>% write(file = "/home/data/test_ensure_vignette_messages.txt")
-  should_messages <- expectations_ensure_vignette()
-  check_results <- should_messages %>%
-    purrr::map_lgl(
-      ~stringr::str_detect(is_messages, .x) %>%
-        any()
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_vignette()
     )
-  # expect_true(all(check_results))
-  expect_true(any(check_results))
+
+  target <- TRUE
+  expect_identical(current, target)
+
+  # Testing output/messages
+  result <- test_output(
+    path = path_temp,
+    expected = expectations_ensure_vignette(),
+    any_all = "all"
+  )
+  expect_true(!inherits(result$result, "try-error"))
+  if (inherits(result$result, "try-error")) {
+    print(result)
+  }
 })
 
 # Ensure {pkgdown} --------------------------------------------------------
 
-context("{pkgdown}")
+context("Ensure {pkgdown}")
 
 test_that("{pkgdown}", {
-    # Testing function itself but suppressing shell output:
-  temp_file <- tempfile()
-  suppressWarnings(
-    verify_output(temp_file, {
-      is <- ensure_pkgdown()
-    })
-  )
+  pkg <- create_local_package()
 
-  # is %>% write(file = "/home/data/test_ensure_pkgdown_is.txt")
-  should <- TRUE
-  expect_identical(is, should)
-
-  # Testing output/messages:
-  is_messages <- readLines(temp_file) %>%
-    stringr::str_subset("Message")
-  # is_messages %>% write(file = "/home/data/test_ensure_pkgdown_messages.txt")
-  should_messages <- expectations_ensure_pkgdown()
-  check_results <- should_messages %>%
-    purrr::map_lgl(
-      ~stringr::str_detect(is_messages, .x) %>%
-        any()
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_pkgdown()
     )
-  # expect_true(all(check_results))
-  expect_true(any(check_results))
+
+  target <- TRUE
+  expect_identical(current, target)
+
+  # Testing output/messages
+  result <- test_output(
+    path = path_temp,
+    expected = expectations_ensure_pkgdown(),
+    any_all = "all"
+  )
+  expect_true(!inherits(result$result, "try-error"))
+  if (inherits(result$result, "try-error")) {
+    print(result)
+  }
 })
 
-# Ensure ignore file state ------------------------------------------------
+test_that("{pkgdown} with prior GitHub Actions", {
+  pkg <- create_local_package()
 
-context("Ignore files state")
+  ensure_env_vars(
+    list(
+      GITHUB_USERNAME = "rappster"
+    )
+  )
+  ensure_github()
+  ensure_github_actions()
+
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_pkgdown()
+    )
+
+  target <- TRUE
+  expect_identical(current, target)
+
+  # Testing output/messages
+  result <- test_output(
+    path = path_temp,
+    expected = expectations_ensure_pkgdown("after_github_actions"),
+    any_all = "all"
+  )
+  expect_true(!inherits(result$result, "try-error"))
+  if (inherits(result$result, "try-error")) {
+    print(result)
+  }
+})
+
+# Ensure knitted README.Rmd -----------------------------------------------
+
+context("Ensure knitted README.Rmd")
+
+test_that("Knit README", {
+  pkg <- create_local_package()
+
+  when_testing_load_local_package()
+  when_testing_copy_template("package-README")
+  ensure_readme_rmd(open = FALSE, strict = TRUE)
+
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_knit_readme()
+    )
+
+  target <- TRUE
+  expect_identical(current, target)
+  path <- "README.md" %>%
+    usethis::proj_path()
+  expect_true(
+    path %>%
+      fs::file_exists()
+  )
+})
+
+# Ensure state of ignore files --------------------------------------------
+
+context("Ensure correct state of ignore files")
 
 test_that("renv/.gitignore", {
-  # Testing function itself but suppressing shell output:
-  temp_file <- tempfile()
-  suppressWarnings(
-    verify_output(temp_file, {
-      is <- ensure_renv_gitignore_state()
-    })
-  )
+  pkg <- create_local_package()
 
-  should <- TRUE
-  expect_identical(is, should)
-  expect_true(fs::file_exists(usethis::proj_path("renv/.gitignore")))
+  ensure_renv_active()
+
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_renv_gitignore_state()
+    )
+
+  target <- TRUE
+  expect_identical(current, target)
+  expect_true(
+    "renv/.gitignore" %>%
+      usethis::proj_path() %>%
+      fs::file_exists()
+  )
 })
 
 test_that(".Rbuildignore", {
-  # Testing function itself but suppressing shell output:
-  temp_file <- tempfile()
-  suppressWarnings(
-    verify_output(temp_file, {
-      is <- ensure_rbuildignore_state()
-    })
-  )
+  pkg <- create_local_package()
 
-  should <- TRUE
-  expect_identical(is, should)
+  # Testing function itself
+  path_temp <- tempfile()
+  current <- path_temp %>%
+    test_and_record_output(
+      ensure_rbuildignore_state()
+    )
+
+  target <- TRUE
+  expect_identical(current, target)
+
+
+  rbuildignore_content <- ".Rbuildignore" %>%
+    usethis::proj_path() %>%
+    read_utf8()
+  target <- c(
+    "^renv$",
+    "^renv\\.lock$",
+    "^\\.*\\.Rproj$",
+    "^\\.Rproj\\.user$",
+    "^README\\.Rmd$",
+    "^BACKLOG\\.Rmd$",
+    "^codecov\\.yml$",
+    "^\\.github$",
+    "^LICENSE\\.md$",
+    "^_pkgdown\\.yml$",
+    "^docs$",
+    "^pkgdown$",
+    "^data$",
+    "^scripts$",
+    "^build\\.R$"
+  )
+  expect_identical(rbuildignore_content, target)
 })
 
 # Ensure github push ------------------------------------------------------
 
-context("Push to GitHub")
+context("Ensure push to GitHub remote")
 
 test_that("Push to GitHub", {
-  is <- ensure_github_push()
-  should <- TRUE
-  expect_identical(is, should)
+  skip("Postponed")
+  current <- ensure_github_push()
+  target <- TRUE
+  expect_identical(current, target)
 })

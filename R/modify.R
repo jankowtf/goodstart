@@ -51,13 +51,6 @@ modify_readme_opts_chunk <- function() {
     write(path)
 }
 
-modify_readme <- function() {
-  modify_readme_installation()
-  modify_readme_backticks()
-  modify_readme_opts_chunk()
-  TRUE
-}
-
 # Modify GitHub Actions workflow YAML -------------------------------------
 
 #' @importFrom fs path dir_ls

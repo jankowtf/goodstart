@@ -30,3 +30,10 @@ git2r::push(
   set_upstream = TRUE
 )
 gert::git_push("origin", refspec = "refs/heads/master")
+
+
+# GitHub issue ------------------------------------------------------------
+
+library(git2r)
+push()
+push(credentials = cred_ssh_key())

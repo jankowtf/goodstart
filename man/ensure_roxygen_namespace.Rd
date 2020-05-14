@@ -4,29 +4,33 @@
 \alias{ensure_roxygen_namespace}
 \title{#' @importFrom roxygen2md roxygen2md
 ensure_roxygen2md <- function(
-install_deps_if_missing = TRUE,
-add_to_description_suggests = TRUE
+ensure_deps = TRUE,
+add_to_suggested = TRUE
 ) {
 ensure_generic(
-install_deps_if_missing = install_deps_if_missing,
-add_to_description_suggests = add_to_description_suggests,
-fn = roxygen2md::roxygen2md,
+ensure_deps = ensure_deps,
+add_to_suggested = add_to_suggested,
+fn = roxygen2md::roxygen2md(),
 deps = "roxygen2md"
 )
 }}
 \usage{
-ensure_roxygen_namespace(install_deps_if_missing = TRUE)
+ensure_roxygen_namespace(
+  ensure_deps = TRUE,
+  add_to_suggested = TRUE,
+  strict = TRUE
+)
 }
 \description{
 #' @importFrom roxygen2md roxygen2md
 ensure_roxygen2md <- function(
-install_deps_if_missing = TRUE,
-add_to_description_suggests = TRUE
+ensure_deps = TRUE,
+add_to_suggested = TRUE
 ) {
 ensure_generic(
-install_deps_if_missing = install_deps_if_missing,
-add_to_description_suggests = add_to_description_suggests,
-fn = roxygen2md::roxygen2md,
+ensure_deps = ensure_deps,
+add_to_suggested = add_to_suggested,
+fn = roxygen2md::roxygen2md(),
 deps = "roxygen2md"
 )
 }

@@ -240,13 +240,6 @@
       "Repository": "CRAN",
       "Hash": "780713bd2f53156fae001443dcdbdcd5"
     },
-    "gert": {
-      "Package": "gert",
-      "Version": "0.3",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "cc96352be1b6360a68fa587d5ef91708"
-    },
     "gh": {
       "Package": "gh",
       "Version": "1.1.0",

@@ -5,47 +5,27 @@ handle_path <- function(path = ".") {
   testing <- global__get_env_var_testing()
   path <- ifelse(
     !fs::is_absolute_path(path),
-    ifelse(!testing, here::here(path), usethis::proj_path(path)),
+    # ifelse(!testing, here::here(path), usethis::proj_path(path)),
+    usethis::proj_path(path),
     path
   )
 }
 
-#' @importFrom fs path
-get_package_name <- function(package = ".") {
-  path <- fs::path(package, "DESCRIPTION")
-
-  description <- path %>%
-    read.dcf()
-
-  description[1 , "Package"] %>%
-    unname()
-}
-
-#' @importFrom fs path
-get_package_version <- function(package = ".") {
-  path <- fs::path(package, "DESCRIPTION")
-
-  description <- path %>%
-    read.dcf()
-
-  description[1 , "Version"] %>%
-    unname()
-}
-
 handle_return_value <- function(
-  out,
   result,
   message,
-  .strict = FALSE
+  strict = TRUE
 ) {
-  if (!.strict) {
-    out
+  result_try <- !inherits(result, "try-error")
+
+  if (!strict) {
+    result_try
   } else {
-    if (!out) {
+    if (!result_try) {
       message(result)
       stop(message)
     } else {
-      out
+      result_try
     }
   }
 }
@@ -63,24 +43,43 @@ knit_readme <- function() {
 #' @import usethis
 handle_deps <- function(
   deps,
-  install_if_missing = FALSE
+  install_if_missing = FALSE,
+  add_to_desc = FALSE,
+  dep_type = valid_dep_types("Suggests")
 ) {
   if (!length(deps)) {
     return(TRUE)
   }
   deps %>%
     purrr::map(function(.dep) {
-      if (!usethis:::is_installed(.dep)) {
+      # Only check of install if not installed
+      out <- if (!usethis:::is_installed(.dep)) {
         if (!install_if_missing) {
           usethis:::check_installed(.dep)
         } else {
           suppressMessages(ensure_package(.dep))
         }
       }
+
+      # Add to DESCRIPTION file
+      if (add_to_desc) {
+        usethis::use_package(.dep, type = dep_type)
+      }
+
+      out
     })
 }
 
 #' @importFrom stringr str_replace_all
 handle_regex_escaping <- function(string) {
   stringr::str_replace_all(string, "(\\W)", "\\\\\\1")
+}
+
+most <- function(x, limit = 0.5) {
+  value <- (sum(x) / length(x))
+
+  out <- value > limit
+  attributes(out)$value <- value
+
+  out
 }

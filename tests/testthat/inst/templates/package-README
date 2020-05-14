@@ -1,0 +1,61 @@
+{{#Rmd}}
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+{{/Rmd}}
+
+# {{{ Package }}} ({{{ Version }}})
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+{{{ Title }}}
+
+{{{ Description }}}
+
+## Installation
+
+### Stable releases on [CRAN](https://CRAN.R-project.org)
+
+Not available yet.
+
+### Stable releases on [GitHub](https://github.com/)
+
+{{#github}}
+``` r
+remotes::install_github(
+  "{{{owner}}}/{{{repo}}}",
+  ref = "release-{release_version}"
+)
+```
+{{/github}}
+
+Substitute the placeholder `{release_version}` with a semantic version
+number of your choice (e.g. `0.0.1`).
+
+Make sure that an actual Git branch for your desired version exists.
+
+### Development releases on [GitHub](https://github.com/)
+
+{{#github}}
+``` r
+remotes::install_github("{{{owner}}}/{{{repo}}}")
+```
+{{/github}}
+
+This installs the version in Git branch `master`
+
+## Usage
+
+To be added

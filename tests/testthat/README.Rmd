@@ -1,0 +1,56 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# goodstart (v0.0.0.9006)
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+Have a good start when developing packages
+
+Provides convenience wrappers around best practice functionality of `{usethis}
+` and friends to provide you with an initial package state where "everything is
+set and ready to go".
+
+## Installation
+
+### Stable releases on [CRAN](https://CRAN.R-project.org)
+
+Not available yet.
+
+### Stable releases on [GitHub](https://github.com/)
+
+``` r
+remotes::install_github(
+  "rappster/goodstart",
+  ref = "release-{release_version}"
+)
+```
+
+Substitute the placeholder `{release_version}` with a semantic version number of your choice (e.g. `0.0.1`).
+
+Make sure that an actual Git branch for your desired version exists.
+
+### Development releases on [GitHub](https://github.com/)
+
+``` r
+remotes::install_github("rappster/goodstart")
+```
+
+This installs the version in Git branch `master`
+
+## Usage
+
+To be added

@@ -11,7 +11,7 @@ ensure_git_remote <- function(
     # "https://github.com/{github_username}/{package_name}"
     "ssh://git@github.com/{github_username}/{package_name}"
   ),
-  .strict = FALSE
+  strict = TRUE
 ) {
   # Input handling:
   if (github_username == "") {
@@ -25,20 +25,17 @@ ensure_git_remote <- function(
     silent = TRUE
   )
 
-  out <- !inherits(result, "try-error")
-
   handle_return_value(
-    out = out,
     result = result,
     message = "Ensurance of git remote failed",
-    .strict = .strict
+    strict = strict
   )
 }
 
 # Ensure git add all ------------------------------------------------------
 
 #' @importFrom gert git_status git_add
-ensure_git_add_all <- function(.strict = FALSE) {
+ensure_git_add_all <- function(strict = TRUE) {
   result <- try(
     gert::git_status() %>%
       # dplyr::pull(file) %>%
@@ -46,13 +43,10 @@ ensure_git_add_all <- function(.strict = FALSE) {
       gert::git_add()
   )
 
-  out <- !inherits(result, "try-error")
-
   handle_return_value(
-    out = out,
     result = result,
     message = "Ensurance of git fetch failed",
-    .strict = .strict
+    strict = strict
   )
 }
 
@@ -63,7 +57,7 @@ ensure_git_add_all <- function(.strict = FALSE) {
 ensure_git_fetch <- function(
   remote = "origin",
   branch = "master",
-  .strict = FALSE
+  strict = TRUE
 ) {
   result <- try(
     gert::git_fetch(
@@ -77,13 +71,10 @@ ensure_git_fetch <- function(
   #   gert::git_fetch(remote), silent = TRUE
   # )
 
-  out <- !inherits(result, "try-error")
-
   handle_return_value(
-    out = out,
     result = result,
     message = "Ensurance of git fetch failed",
-    .strict = .strict
+    strict = strict
   )
 }
 
@@ -92,20 +83,17 @@ ensure_git_fetch <- function(
 #' @importFrom gert git_commit
 ensure_git_commit <- function(
   message = stringr::str_glue("Off to a good start ({Sys.time()})"),
-  .strict = FALSE
+  strict = TRUE
 ) {
   result <- try(
     gert::git_commit(message %>% as.character()),
     silent = TRUE
   )
 
-  out <- !inherits(result, "try-error")
-
   handle_return_value(
-    out = out,
     result = result,
     message = "Ensurance of git commit failed",
-    .strict = .strict
+    strict = strict
   )
 }
 
@@ -117,7 +105,7 @@ ensure_git_push <- function(
   remote = "origin",
   branch = "master",
   force = FALSE,
-  .strict = FALSE
+  strict = TRUE
 ) {
   result <- try(
     gert::git_push(
@@ -137,12 +125,9 @@ ensure_git_push <- function(
     )
   )
 
-  out <- !inherits(result, "try-error")
-
   handle_return_value(
-    out = out,
     result = result,
     message = "Ensurance of git push failed",
-    .strict = .strict
+    strict = strict
   )
 }

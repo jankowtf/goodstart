@@ -1,3 +1,19 @@
+# goodstart 0.0.0.9006
+
+Unit tests and better README
+
+- Fixed tests
+- Updated README.Rmd
+
+--------------------------------------------------------------------------------
+
+# goodstart 0.0.0.9005
+
+- TODO: Resolve GITHUB_USERNAME 
+- TODO: Fix copy/paste for {lifecycle}
+
+--------------------------------------------------------------------------------
+
 # goodstart 0.0.0.9004
 
 - r-lib/usethis

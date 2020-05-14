@@ -13,3 +13,4 @@
 ^scripts$
 ^build\.R$
 ^\.*\.Rproj$
+^BACKLOG\.Rmd$
