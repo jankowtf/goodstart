@@ -5,18 +5,29 @@
 #' @importFrom usethis ui_stop
 ensure_git_remote <- function(
   name = "origin",
-  github_username = Sys.getenv("GITHUB_USERNAME"),
-  package_name = get_package_name(),
+  github_username = Sys.getenv("GS_GITHUB_USERNAME"),
+  package_name = gs_package_name(),
   url = stringr::str_glue(
     # "https://github.com/{github_username}/{package_name}"
     "ssh://git@github.com/{github_username}/{package_name}"
   ),
   strict = TRUE
 ) {
-  # Input handling:
+  # Input handling
   if (github_username == "") {
-    usethis::ui_stop("Environment variable 'GITHUB_USERNAME' not set")
+    usethis::ui_stop("Environment variable 'GS_GITHUB_USERNAME' not set")
   }
+
+  # List available remotes
+  remotes <- gert::git_remote_list()$name
+
+  # Early exit if remote already exists
+  remote <- "origin"
+  if (remote %in% remotes) {
+    return(TRUE)
+  }
+
+  # Add remote
   result <- try(
     gert::git_remote_add(
       name = "origin",
@@ -25,6 +36,7 @@ ensure_git_remote <- function(
     silent = TRUE
   )
 
+  # Handle return value
   handle_return_value(
     result = result,
     message = "Ensurance of git remote failed",

@@ -1,0 +1,19 @@
+---
+title: "Dev"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Querying if GitHub is used or not
+
+```{r}
+gert::git_remote_info()
+```
+
+```{r}
+pkgload::pkg_name()
+```
+

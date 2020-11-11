@@ -8,7 +8,9 @@ ensure_unit_testing(
   package = valid_unit_test_packages("testthat"),
   ensure_deps = TRUE,
   add_to_suggested = TRUE,
-  strict = TRUE
+  strict = TRUE,
+  info = FALSE,
+  .trace = FALSE
 )
 }
 \arguments{

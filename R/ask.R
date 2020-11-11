@@ -853,7 +853,7 @@ ask_github <- function(
       select.list(
         choices = valid_yes_no_again_exit(),
         preselect = valid_yes_no_again_exit("yes"),
-        title = "Is your GitHub repository name the same as your package's name ('{get_package_name()}')?" %>% ui_glue_wrap_field()
+        title = "Is your GitHub repository name the same as your package's name ('{gs_package_name()}')?" %>% ui_glue_wrap_field()
       )
     message()
 
@@ -866,7 +866,7 @@ ask_github <- function(
     # Handle actual GitHub repo name
     use_github_repo_default <- answer %>% is_answer_true_false()
     use_github_repo_name <- if (use_github_repo_default) {
-      get_package_name()
+      gs_package_name()
     } else {
       "What's your GitHub repository name? Enter without quotes: " %>%
         usethis::ui_field() %>%

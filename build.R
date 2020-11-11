@@ -19,8 +19,8 @@ ignore_dev_packages <- TRUE
 # Package infos -----------------------------------------------------------
 
 # package_name <- devtools::as.package(".")$package
-package_name <- get_package_name()
-package_version <- get_package_version()
+package_name <- gs_package_name()
+package_version <- gs_package_version()
 
 # Dependencies ------------------------------------------------------------
 

@@ -4,7 +4,7 @@ Sys.setenv("__GOODSTART_TESTING" = "TRUE")
 
 # Good start --------------------------------------------------------------
 
-context("Ensure good start")
+# skip("Not refactored yet")
 
 target <- list(
   ensure_removed_hello_r = TRUE,
@@ -36,7 +36,7 @@ target <- list(
 )
 
 test_that("Ensure good start but don't push it", {
-  pkg <- create_local_package()
+  pkg <- create_sandbox_package()
 
   # Preliminaries
   # ensure_package("praise")
@@ -62,11 +62,12 @@ test_that("Ensure good start but don't push it", {
 
   # length(current)
   # length(target)
+  # waldo::compare(current, target)
   expect_identical(current, target)
 })
 
 test_that("Ensure good start and push it", {
-  pkg <- create_local_package()
+  pkg <- create_sandbox_package()
 
   # Preliminaries
   # ensure_package("praise")

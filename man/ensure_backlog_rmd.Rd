@@ -4,10 +4,14 @@
 \alias{ensure_backlog_rmd}
 \title{Ensure BACKLOG.Rmd}
 \usage{
-ensure_backlog_rmd(open = rlang::is_interactive())
+ensure_backlog_rmd(
+  open = rlang::is_interactive(),
+  info = FALSE,
+  .trace = FALSE
+)
 }
 \arguments{
-\item{open}{}
+\item{info}{}
 }
 \value{
 \link{logical(1)}

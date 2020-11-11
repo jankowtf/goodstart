@@ -8,11 +8,12 @@ ensure_readme_rmd(
   ensure_deps = TRUE,
   add_to_suggested = TRUE,
   open = rlang::is_interactive(),
-  strict = TRUE
+  strict = TRUE,
+  info = FALSE
 )
 }
 \arguments{
-\item{strict}{}
+\item{info}{}
 }
 \value{
 \code{\link[=logical]{logical()}}

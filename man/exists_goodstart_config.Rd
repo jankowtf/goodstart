@@ -4,10 +4,10 @@
 \alias{exists_goodstart_config}
 \title{Check existence of config file}
 \usage{
-exists_goodstart_config(path = get_path_config_file())
+exists_goodstart_config(path = path_config_file(id = id), id = character())
 }
 \arguments{
-\item{path}{}
+\item{id}{}
 }
 \value{
 

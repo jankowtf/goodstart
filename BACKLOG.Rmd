@@ -26,6 +26,7 @@ issues and/or vice verso
 can't get `return()` and `Recall()` to work when they're not called in the
 "correct" frame
 - TODO-20200511T1804: Check if badge for license file can be added to README
+- TODO-20200728-1134: Pin down reason why deferring doesn't work as desired
 
 ## IN PROGRESS
 

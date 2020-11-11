@@ -8,7 +8,9 @@ ensure_ci(
   platform = valid_ci_platforms("github_actions"),
   ensure_deps = TRUE,
   add_to_suggested = TRUE,
-  strict = TRUE
+  strict = TRUE,
+  info = FALSE,
+  .trace = FALSE
 )
 }
 \arguments{

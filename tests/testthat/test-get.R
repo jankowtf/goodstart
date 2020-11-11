@@ -1,20 +1,18 @@
-context("Get DESCRIPTION values")
-
 test_that("Get package name", {
-  is <- get_package_name()
-  should <- "goodstart"
-  expect_identical(is, should)
+  current <- gs_package_name()
+  target <- "goodstart"
+  expect_identical(current, target)
 })
 
 test_that("Get package version", {
-  is <- get_package_version()
-  should <- "\\d\\.\\d\\.\\d\\.?\\d?"
-  expect_match(is, should)
+  current <- gs_package_version()
+  target <- "\\d\\.\\d\\.\\d\\.?\\d?"
+  expect_match(current, target)
 })
 
 test_that("Get project data", {
-  is <- get_project_data()
-  should <- c(
+  current <- gs_project_data()
+  target <- c(
     "Package",
     "Type",
     "Title",
@@ -36,7 +34,7 @@ test_that("Get project data", {
   )
 
   expect_true(
-    stringr::str_detect(is %>% names(), should) %>%
+    stringr::str_detect(current %>% names(), target) %>%
       most()
   )
 })

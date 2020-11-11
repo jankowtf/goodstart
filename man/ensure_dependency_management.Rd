@@ -8,7 +8,9 @@ ensure_dependency_management(
   package = valid_dep_management_packages("renv"),
   ensure_deps = TRUE,
   add_to_suggested = TRUE,
-  strict = TRUE
+  strict = TRUE,
+  info = FALSE,
+  .trace = FALSE
 )
 }
 \arguments{

@@ -1,7 +1,7 @@
 Package: goodstart
 Type: Package
 Title: Have a good start when developing packages
-Version: 0.0.0.9006
+Version: 0.0.0.9007
 Authors@R: person("Janko", "Thyson", email = "janko.thyson@rappster.io", 
     role = c("aut", "cre"))
 Description: Provides convenience wrappers around best practice functionality 
@@ -19,9 +19,11 @@ Suggests:
     pkgdown,
     renv,
     whisker,
-    clipr
+    clipr,
+    magrittr,
+    commonmark
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 Imports: 
     lifecycle,
     usethis,

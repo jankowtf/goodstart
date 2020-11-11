@@ -3,7 +3,7 @@
 #' @return
 #' @importFrom stringr str_glue
 skeval__store_name <- function() {
-  pkg <- get_package_name() %>% toupper()
+  pkg <- gs_package_name() %>% toupper()
   stringr::str_glue("{pkg}_KEY_VALUE_STORE")
 }
 

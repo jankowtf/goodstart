@@ -2,7 +2,7 @@
 
 #' @importFrom stringr str_glue str_replace
 modify_readme_installation <- function() {
-  package <- get_package_name()
+  package <- gs_package_name()
   package_remote <- stringr::str_glue(
     "{Sys.getenv(\"GITHUB_USERNAME\")}/{package}"
   )

@@ -1,3 +1,13 @@
+# goodstart 0.0.0.9007
+
+Fixed unit test 
+
+- Multiple refactorings to unit tests
+- Some bugfixes regarding `requireNamespace()` vs. `x %in% rownames(installed.packages())`
+- Started to remove dependency on internal functions from `{usethis}`
+
+--------------------------------------------------------------------------------
+
 # goodstart 0.0.0.9006
 
 Unit tests and better README

@@ -14,3 +14,4 @@
 ^build\.R$
 ^\.*\.Rproj$
 ^BACKLOG\.Rmd$
+^Rmd

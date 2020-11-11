@@ -5,3 +5,6 @@ NULL
 
 #' @importFrom magrittr %>%
 NULL
+
+#' @import fs
+NULL

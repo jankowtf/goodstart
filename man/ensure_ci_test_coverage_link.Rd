@@ -6,7 +6,9 @@
 \usage{
 ensure_ci_test_coverage_link(
   ci_test_coverage_service = valid_ci_test_coverage_services("codecov"),
-  ci_platform = valid_ci_platforms("github_actions")
+  ci_platform = valid_ci_platforms("github_actions"),
+  info = FALSE,
+  .trace = FALSE
 )
 }
 \arguments{

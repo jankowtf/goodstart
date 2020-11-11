@@ -4,10 +4,10 @@
 \alias{read_goodstart_config}
 \title{Read config for \code{{goodstart}}}
 \usage{
-read_goodstart_config(path = get_path_config_file())
+read_goodstart_config(path = path_config_file(id = id), id = character())
 }
 \arguments{
-\item{path}{}
+\item{id}{}
 }
 \value{
 

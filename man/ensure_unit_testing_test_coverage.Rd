@@ -8,7 +8,9 @@ ensure_unit_testing_test_coverage(
   package = valid_unit_test_coverage_packages("covr"),
   ensure_deps = TRUE,
   add_to_suggested = TRUE,
-  strict = TRUE
+  strict = TRUE,
+  info = FALSE,
+  .trace = FALSE
 )
 }
 \arguments{

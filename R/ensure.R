@@ -6,7 +6,9 @@ ensure_good_start <- function(
   open = rlang::is_interactive(),
   push_to_github = FALSE,
   ensure_deps = TRUE,
-  add_to_suggested = TRUE
+  add_to_suggested = TRUE,
+  info = FALSE,
+  .trace = FALSE
 ) {
   # Ensure dependencies
   "magrittr" %>%
@@ -16,8 +18,9 @@ ensure_good_start <- function(
       dep_type = valid_dep_types("Suggests")
     )
 
+  # Ensure env vars are set
   ensure_env_vars(
-    list(GITHUB_USERNAME = config$use_github_user_name)
+    list(GS_GITHUB_USERNAME = config$use_github_user_name)
   )
 
   # Initialize
@@ -25,9 +28,9 @@ ensure_good_start <- function(
 
   # Ensure example files are removed ----------
   output$ensure_removed_hello_r <-
-    ensure_removed_hello_r()
+    ensure_removed_hello_r(info = info, .trace = .trace)
   output$ensure_removed_hello_rd <-
-    ensure_removed_hello_rd()
+    ensure_removed_hello_rd(info = info, .trace = .trace)
 
   # Ensure dependency management ----------
   # It's important that this precedes all other ensurance functions as this
@@ -36,27 +39,37 @@ ensure_good_start <- function(
     config$use_dep_management
   ) {
     ensure_dependency_management(
-      package = config$use_dep_management_package
+      package = config$use_dep_management_package,
+      info = info,
+      .trace = .trace
     )
   } else {
     FALSE
   }
 
   # Ensure unit testing ----------
-  output$ensure_unit_testing <- FALSE
-  output$ensure_test_coverage <- FALSE
-  if (config$use_unit_testing) {
-    output$ensure_unit_testing <-
-      ensure_unit_testing(
-        package = config$use_unit_testing_package
-      )
+  # if (FALSE) {
+    output$ensure_unit_testing <- FALSE
+    output$ensure_test_coverage <- FALSE
+    if (config$use_unit_testing) {
+      output$ensure_unit_testing <-
+        ensure_unit_testing(
+          package = config$use_unit_testing_package,
+          info = info,
+          .trace = .trace
+        )
 
-    if (config$use_unit_testing_coverage) {
-      # Ensure test coverage infrastructure is set up
-      output$ensure_test_coverage <-
-        ensure_unit_testing_test_coverage(strict = FALSE)
+      if (config$use_unit_testing_coverage) {
+        # Ensure test coverage infrastructure is set up
+        output$ensure_test_coverage <-
+          ensure_unit_testing_test_coverage(
+            strict = FALSE,
+            info = info,
+            .trace = .trace
+          )
+      }
     }
-  }
+  # }
 
   # Ensure README ----------
   output$ensure_readme_rmd <- ifelse(
@@ -68,7 +81,12 @@ ensure_good_start <- function(
         valid_readme_types("md")
       }
 
-      ensure_readme(type = readme_type, open = open)
+      ensure_readme(
+        type = readme_type,
+        open = open,
+        info = info,
+        .trace = .trace
+      )
     },
     FALSE
   )
@@ -76,14 +94,22 @@ ensure_good_start <- function(
   # Ensure NEWS.md ----------
   output$ensure_news_md <- ifelse(
     config$use_news,
-    ensure_news_md(open = open),
+    ensure_news_md(
+      open = open,
+      info = info,
+      .trace = .trace
+    ),
     FALSE
   )
 
   # Ensure BACKLOG.Rmd ----------
   output$ensure_backlog_rmd <- ifelse(
     config$use_backlog,
-    ensure_backlog_rmd(open = open),
+    ensure_backlog_rmd(
+      open = open,
+      info = info,
+      .trace = .trace
+    ),
     FALSE
   )
 
@@ -95,34 +121,34 @@ ensure_good_start <- function(
 
   if (config$use_roxygen) {
     output$ensure_roxygen <-
-      ensure_roxygen()
+      ensure_roxygen(info = info, .trace = .trace)
 
     # Ensure default NAMESPACE is removed
     output$ensure_removed_namespace_default <-
-      ensure_removed_namespace_default()
+      ensure_removed_namespace_default(info = info, .trace = .trace)
 
     # Ensure roxygen2-based NAMESPACE
     output$ensure_roxygen_namespace <-
-      ensure_roxygen_namespace()
+      ensure_roxygen_namespace(info = info, .trace = .trace)
 
     if (config$use_rmarkdown) {
       # Ensure Markdown can be used in {roxygen2} code
       output$ensure_roxygen_md <-
-        ensure_roxygen_md()
+        ensure_roxygen_md(info = info, .trace = .trace)
     }
   }
 
   # Ensure {lifecycle} ----------
   output$ensure_lifecycle <- ifelse(
     config$use_lifecycle,
-    ensure_lifecycle(),
+    ensure_lifecycle(info = info, .trace = .trace),
     FALSE
   )
 
   # Ensure GitHub ----------
   output$ensure_github <- ifelse(
     config$use_github,
-    ensure_github(),
+    ensure_github(info = info, .trace = .trace),
     FALSE
   )
 
@@ -130,7 +156,9 @@ ensure_good_start <- function(
   output$ensure_ci <- ifelse(
     config$use_ci,
     ensure_ci(
-      platform = config$use_ci_platform
+      platform = config$use_ci_platform,
+      info = info,
+      .trace = .trace
     ),
     FALSE
   )
@@ -139,7 +167,9 @@ ensure_good_start <- function(
   output$ensure_ci_test_coverage <- ifelse(
     config$use_ci_test_coverage,
     ensure_ci_test_coverage(
-      service = config$use_ci_test_coverage_service
+      service = config$use_ci_test_coverage_service,
+      info = info,
+      .trace = .trace
     ),
     FALSE
   )
@@ -150,7 +180,9 @@ ensure_good_start <- function(
   ) {
     ensure_ci_test_coverage_link(
       ci_test_coverage_service = config$use_ci_test_coverage_service,
-      ci_platform = config$use_ci_platform
+      ci_platform = config$use_ci_platform,
+      info = info,
+      .trace = .trace
     )
   } else {
     FALSE
@@ -160,7 +192,9 @@ ensure_good_start <- function(
   output$ensure_license <- ifelse(
     config$use_license,
     ensure_license(
-      license = config$use_license_license
+      license = config$use_license_license,
+      info = info,
+      .trace = .trace
     ),
     FALSE
   )
@@ -168,34 +202,34 @@ ensure_good_start <- function(
   # Ensure README.Rmd is knitted ----------
   output$ensure_knit_readme <- ifelse(
     config$use_rmarkdown,
-    ensure_knit_readme(),
+    ensure_knit_readme(info = info, .trace = .trace),
     FALSE
   )
 
   # Ensure vignettes infrastructure is set up ----------
   output$ensure_vignette <- ifelse(
     config$use_rmarkdown,
-    ensure_vignette(),
+    ensure_vignette(info = info, .trace = .trace),
     FALSE
   )
 
   # Ensure {pkgdown} ----------
   output$ensure_pkgdown <- ifelse(
     config$use_rmarkdown,
-    ensure_pkgdown(),
+    ensure_pkgdown(info = info, .trace = .trace),
     FALSE
   )
 
   # Ensure ignore files state ----------
   output$ensure_renv_gitignore_state <-
-    ensure_renv_gitignore_state()
+    ensure_renv_gitignore_state(info = info, .trace = .trace)
   output$ensure_rbuildignore_state <-
-    ensure_rbuildignore_state()
+    ensure_rbuildignore_state(info = info, .trace = .trace)
 
   # Ensure good start GitHub commit and push ----------
   output$ensure_github_push <- ifelse(
     push_to_github,
-    ensure_github_push(),
+    ensure_github_push(info = info, .trace = .trace),
     FALSE
   )
 
@@ -232,6 +266,7 @@ ensure_generic <- function(
   requires_restart = FALSE
 ) {
   fn <- rlang::enquo(fn)
+
   if (length(path)) {
     path_0 <- path
     path <- path %>%
@@ -250,7 +285,7 @@ ensure_generic <- function(
     if (inherits(result, "try-error")) {
       if (length(deps) && ensure_deps) {
         usethis:::check_installed("renv")
-        project <- if (get_package_name() != get_package_name(here::here())) {
+        project <- if (gs_package_name() != gs_package_name(here::here())) {
           handle_path()
         } else {
           NULL
@@ -285,6 +320,7 @@ ensure_generic <- function(
       }
     } else {
       TRUE
+      # result
     }
   } else {
     usethis::ui_done("{path_0} already exists")
@@ -296,11 +332,11 @@ ensure_generic <- function(
 
 #' @import usethis
 #' @importFrom renv install
-ensure_package <- function(package) {
-  if (!usethis:::is_installed(package)) {
+ensure_package <- function(package, force = FALSE) {
+  if (!is_package_installed(package) || force) {
     renv::install(package)
   }
-  usethis:::is_installed(package)
+  is_package_installed(package)
 }
 
 # Ensure removed files ----------------------------------------------------
@@ -357,12 +393,34 @@ ensure_existing_file <- function(path, content = NULL) {
 
 # Ensure example files are removed ----------------------------------------
 
-ensure_removed_hello_r <- function() {
+ensure_removed_hello_r <- function(
+  info = FALSE,
+  .trace = FALSE
+) {
+  # Show info
+  show_info(show = info)
+
+  # Show trace
+  show_trace(show = .trace)
+
+  if (getwd() %>% fs::path_file() == "goodstart$") {
+    browser()
+    message("DEBUG")
+  }
+
   "R/hello.R" %>%
     ensure_removed_file()
 }
 
-ensure_removed_hello_rd <- function() {
+ensure_removed_hello_rd <- function(
+  info = FALSE,
+  .trace = FALSE
+) {
+  # Show info
+  show_info(show = info)
+
+  show_trace(show = .trace)
+
   "man/hello.Rd" %>%
     ensure_removed_file()
 }
@@ -378,7 +436,16 @@ ensure_removed_hello_rd <- function() {
 #' @importFrom usethis ui_done
 #' @return [logical(1)]
 #' @export
-ensure_removed_namespace_default <- function() {
+ensure_removed_namespace_default <- function(
+  info = FALSE,
+  .trace = FALSE
+) {
+  # Show info
+  show_info(show = info)
+
+  # Show trace
+  show_trace(show = .trace)
+
   path_0 <- "NAMESPACE"
   path <- path_0 %>%
     handle_path()
@@ -416,8 +483,13 @@ ensure_license <- function(
   license = valid_licenses(flip = TRUE),
   ensure_deps = TRUE,
   add_to_suggested = TRUE,
-  strict = TRUE
+  strict = TRUE,
+  info = FALSE,
+  .trace = FALSE
 ) {
+  # Show info
+  show_info(show = info)
+
   # TODO-20200511T1804: Check if badge for license file can be added to README
   license <- match.arg(license)
 
@@ -471,8 +543,16 @@ ensure_dependency_management <- function(
   package = valid_dep_management_packages("renv"),
   ensure_deps = TRUE,
   add_to_suggested = TRUE,
-  strict = TRUE
+  strict = TRUE,
+  info = FALSE,
+  .trace = FALSE
 ) {
+  # Show info
+  show_info(show = info)
+
+  # Show trace
+  show_trace(show = .trace)
+
   if (package == "renv") {
     list(
       ensure_renv_active =
@@ -520,7 +600,7 @@ ensure_renv_active <- function(
     )
 
   # Distinction between `{goodstart}` and other packages
-  path <- if (get_package_name() != get_package_name(here::here())) {
+  path <- if (gs_package_name() != gs_package_name(here::here())) {
     handle_path()
   } else {
     NULL
@@ -562,7 +642,7 @@ ensure_renv_upgraded <- function(
     )
 
   # Distinction between `{goodstart}` and other packages
-  path <- if (get_package_name() != get_package_name(here::here())) {
+  path <- if (gs_package_name() != gs_package_name(here::here())) {
     handle_path()
   } else {
     NULL
@@ -589,8 +669,16 @@ ensure_unit_testing <- function(
   package = valid_unit_test_packages("testthat"),
   ensure_deps = TRUE,
   add_to_suggested = TRUE,
-  strict = TRUE
+  strict = TRUE,
+  info = FALSE,
+  .trace = FALSE
 ) {
+  # Show info
+  show_info(show = info)
+
+  # Show trace
+  show_trace(show = .trace)
+
   # if (package == "testthat") {
   #   ensure_unit_testing_testthat(
   #     ensure_deps = ensure_deps,
@@ -668,8 +756,16 @@ ensure_unit_testing_test_coverage <- function(
   package = valid_unit_test_coverage_packages("covr"),
   ensure_deps = TRUE,
   add_to_suggested = TRUE,
-  strict = TRUE
+  strict = TRUE,
+  info = FALSE,
+  .trace = FALSE
 ) {
+  # Show info
+  show_info(show = info)
+
+  # Show trace
+  show_trace(show = .trace)
+
   "ensure_unit_testing_test_coverage_{package}" %>%
     stringr::str_glue() %>%
     rlang::parse_expr() %>%
@@ -695,13 +791,18 @@ ensure_unit_testing_test_coverage_covr <- function(
   strict = TRUE
 ) {
   result <- try({
-    deps <- "covr"
+    deps <- c("covr", "testthat", "DT")
     deps %>%
       handle_deps(
         install_if_missing = ensure_deps,
         add_to_desc = add_to_suggested,
         dep_type = valid_dep_types("Suggests")
       )
+    # print(deps)
+    # desc::desc_get_deps() %>% print()
+    # .libPaths() %>% print()
+    # installed.packages() %>% rownames() %>% sort() %>% print()
+    # covr::report()
 
     ensure_generic(
       ensure_deps = ensure_deps,
@@ -725,6 +826,8 @@ ensure_unit_testing_test_coverage_covr <- function(
 #' @param add_to_suggested
 #' @param open
 #' @param strict
+#' @param type
+#' @param info
 #'
 #' @return [logical()]
 #' @export
@@ -733,8 +836,16 @@ ensure_readme <- function(
   ensure_deps = TRUE,
   add_to_suggested = TRUE,
   open = rlang::is_interactive(),
-  strict = TRUE
+  strict = TRUE,
+  info = FALSE,
+  .trace = FALSE
 ) {
+  # Show info
+  show_info(show = info)
+
+  # Show trace
+  show_trace(show = .trace)
+
   "ensure_readme_{type}" %>%
     stringr::str_glue() %>%
     rlang::parse_expr() %>%
@@ -742,7 +853,8 @@ ensure_readme <- function(
       ensure_deps = ensure_deps,
       add_to_suggested = add_to_suggested,
       open = open,
-      strict = strict
+      strict = strict,
+      info = info
     ) %>%
     rlang::eval_tidy()
 }
@@ -753,6 +865,7 @@ ensure_readme <- function(
 #' @param add_to_suggested
 #' @param open
 #' @param strict
+#' @param info
 #'
 #' @return [logical()]
 #'
@@ -765,8 +878,12 @@ ensure_readme_rmd <- function(
   ensure_deps = TRUE,
   add_to_suggested = TRUE,
   open = rlang::is_interactive(),
-  strict = TRUE
+  strict = TRUE,
+  info = FALSE
 ) {
+  # Show info
+  show_info(show = info)
+
   result <- try({
     deps <- c(
       "rmarkdown",
@@ -812,8 +929,12 @@ ensure_readme_md <- function(
   ensure_deps = TRUE,
   add_to_suggested = TRUE,
   open = rlang::is_interactive(),
-  strict = TRUE
+  strict = TRUE,
+  info = FALSE
 ) {
+  # Show info
+  show_info(show = info)
+
   result <- try({
     deps <- c(
       # "rmarkdown",
@@ -843,7 +964,16 @@ ensure_readme_md <- function(
 }
 
 #' @export
-ensure_knit_readme <- function() {
+ensure_knit_readme <- function(
+  info = FALSE,
+  .trace = FALSE
+) {
+  # Show info
+  show_info(show = info)
+
+  # Show trace
+  show_trace(show = .trace)
+
   suppressMessages(knit_readme())
   TRUE
 }
@@ -853,8 +983,16 @@ ensure_knit_readme <- function() {
 #' @importFrom fs file_exists
 #' @importFrom usethis use_news_md
 ensure_news_md <- function(
-  open = rlang::is_interactive()
+  open = rlang::is_interactive(),
+  info = FALSE,
+  .trace = FALSE
 ) {
+  # Show info
+  show_info(show = info)
+
+  # Show trace
+  show_trace(show = .trace)
+
   path_0 <- "NEWS.md"
   path <- path_0 %>%
     handle_path()
@@ -872,14 +1010,23 @@ ensure_news_md <- function(
 #' Ensure BACKLOG.Rmd
 #'
 #' @param open
+#' @param info
 #'
 #' @return [logical(1)]
 #' @importFrom fs file_exists
 #' @importFrom usethis use_news_md
 #' @export
 ensure_backlog_rmd <- function(
-  open = rlang::is_interactive()
+  open = rlang::is_interactive(),
+  info = FALSE,
+  .trace = FALSE
 ) {
+  # Show info
+  show_info(show = info)
+
+  # Show trace
+  show_trace(show = .trace)
+
   path_0 <- "BACKLOG.Rmd"
   path <- path_0 %>%
     handle_path()
@@ -895,12 +1042,21 @@ ensure_backlog_rmd <- function(
 
 #' @param ensure_deps
 #' @param add_to_suggested
+#' @param info
 #'
 #' @export
 ensure_roxygen <- function(
   ensure_deps = TRUE,
-  add_to_suggested = TRUE
+  add_to_suggested = TRUE,
+  info = FALSE,
+  .trace = FALSE
 ) {
+  # Show info
+  show_info(show = info)
+
+  # Show trace
+  show_trace(show = .trace)
+
   ensure_generic(
     ensure_deps = ensure_deps,
     add_to_suggested = add_to_suggested,
@@ -915,8 +1071,16 @@ ensure_roxygen <- function(
 #' @export
 ensure_roxygen_md <- function(
   ensure_deps = TRUE,
-  add_to_suggested = TRUE
+  add_to_suggested = TRUE,
+  info = FALSE,
+  .trace = FALSE
 ) {
+  # Show info
+  show_info(show = info)
+
+  # Show trace
+  show_trace(show = .trace)
+
   ensure_generic(
     ensure_deps = ensure_deps,
     add_to_suggested = add_to_suggested,
@@ -938,15 +1102,23 @@ ensure_roxygen_md <- function(
 #'   )
 #' }
 
-# Ensure NAMESPACE by roxygen2 --------------------------------------------
+# Ensure roxygen NAMESPACE ------------------------------------------------
 
 #' @importFrom roxygen2 roxygenize
 #' @export
 ensure_roxygen_namespace <- function(
   ensure_deps = TRUE,
   add_to_suggested = TRUE,
-  strict = TRUE
+  strict = TRUE,
+  info = FALSE,
+  .trace = FALSE
 ) {
+  # Show info
+  show_info(show = info)
+
+  # Show trace
+  show_trace(show = .trace)
+
   result <- try({
     # usethis:::check_installed("roxygen2")
     deps <- c("roxygen2", "commonmark")
@@ -958,6 +1130,7 @@ ensure_roxygen_namespace <- function(
           dep_type = valid_dep_types("Suggests")
         )
     )
+    ensure_removed_namespace_default()
     roxygen2::roxygenize()
   })
 
@@ -977,8 +1150,13 @@ ensure_roxygen_namespace <- function(
 #' @export
 ensure_lifecycle <- function(
   ensure_deps = TRUE,
-  add_to_suggested = TRUE
+  add_to_suggested = TRUE,
+  info = FALSE,
+  .trace = FALSE
 ) {
+  # Show info
+  show_info(show = info)
+
   deps <- c(
     "clipr"
   )
@@ -989,7 +1167,7 @@ ensure_lifecycle <- function(
       dep_type = valid_dep_types("Suggests")
     )
 
-  package_name <- get_package_name()
+  package_name <- gs_package_name()
 
   path_0 <- fs::path("R", stringr::str_glue("{package_name}-package.R"))
   path <- path_0 %>%
@@ -1035,8 +1213,13 @@ ensure_lifecycle <- function(
 ensure_github <- function(
   ensure_deps = TRUE,
   add_to_suggested = TRUE,
-  strict = TRUE
+  strict = TRUE,
+  info = FALSE,
+  .trace = FALSE
 ) {
+  # Show info
+  show_info(show = info)
+
   # Ensure dependency
   deps <- "gert"
   capture.output(
@@ -1087,8 +1270,13 @@ ensure_ci <- function(
   ensure_deps = TRUE,
   add_to_suggested = TRUE,
   # open = FALSE,
-  strict = TRUE
+  strict = TRUE,
+  info = FALSE,
+  .trace = FALSE
 ) {
+  # Show info
+  show_info(show = info)
+
   if (platform == "github_actions") {
     ensure_github_actions(
       ensure_deps = ensure_deps,
@@ -1147,8 +1335,16 @@ ensure_ci_test_coverage <- function(
   ensure_deps = TRUE,
   add_to_suggested = TRUE,
   # open = FALSE,
-  strict = TRUE
+  strict = TRUE,
+  info = FALSE,
+  .trace = FALSE
 ) {
+  # Show info
+  show_info(show = info)
+
+  # Show trace
+  show_trace(show = .trace)
+
   if (service %in%
       valid_ci_test_coverage_services(c("codecov", "coveralls"))
     ) {
@@ -1212,8 +1408,16 @@ ensure_ci_test_coverage_ <- function(
 #' @export
 ensure_ci_test_coverage_link <- function(
   ci_test_coverage_service = valid_ci_test_coverage_services("codecov"),
-  ci_platform = valid_ci_platforms("github_actions")
+  ci_platform = valid_ci_platforms("github_actions"),
+  info = FALSE,
+  .trace = FALSE
 ) {
+  # Show info
+  show_info(show = info)
+
+  # Show trace
+  show_trace(show = .trace)
+
   if (ci_test_coverage_service == valid_ci_test_coverage_services("codecov") &&
       ci_platform == valid_ci_platforms("github_actions")
   ) {
@@ -1231,8 +1435,16 @@ ensure_ci_test_coverage_link <- function(
 #' @export
 ensure_pkgdown <- function(
   ensure_deps = TRUE,
-  add_to_suggested = TRUE
+  add_to_suggested = TRUE,
+  info = FALSE,
+  .trace = FALSE
 ) {
+  # Show info
+  show_info(show = info)
+
+  # Show trace
+  show_trace(show = .trace)
+
   result <- try({
     deps <- "pkgdown"
     deps %>%
@@ -1270,8 +1482,16 @@ ensure_pkgdown <- function(
 #' @export
 ensure_vignette <- function(
   ensure_deps = TRUE,
-  add_to_suggested = TRUE
+  add_to_suggested = TRUE,
+  info = FALSE,
+  .trace = FALSE
 ) {
+  # Show info
+  show_info(show = info)
+
+  # Show trace
+  show_trace(show = .trace)
+
   result <- try({
     # deps <- "pkgdown"
     # deps %>%
@@ -1283,14 +1503,14 @@ ensure_vignette <- function(
 
     use_vignette_partial <- purrr::partial(
       usethis::use_vignette,
-      name = get_package_name()
+      name = gs_package_name()
     )
 
     ensure_generic(
       ensure_deps = ensure_deps,
       add_to_suggested = add_to_suggested,
       # fn = use_vignette_partial
-      fn = usethis::use_vignette(name = get_package_name())
+      fn = usethis::use_vignette(name = gs_package_name())
       # deps = deps
     )
   })
@@ -1305,7 +1525,26 @@ ensure_vignette <- function(
 # Ensure ignore files state -----------------------------------------------
 
 #' @export
-ensure_renv_gitignore_state <- function(strict = TRUE) {
+ensure_renv_gitignore_state <- function(
+  strict = TRUE,
+  info = FALSE,
+  .trace = FALSE
+) {
+  # Show info
+  show_info(show = info)
+
+  # Show trace
+  show_trace(show = .trace)
+
+  # Check if {renv} is used
+  used <- is_used_renv()
+
+  # Early exit if {renv} is not used
+  if (!used) {
+    return(FALSE)
+  }
+
+  # Modify ./renv/.gitignore file
   result <- try(
     c(
       "library/",
@@ -1318,6 +1557,7 @@ ensure_renv_gitignore_state <- function(strict = TRUE) {
       modify_ignore_file("renv/.gitignore", escape = FALSE)
   )
 
+  # Handle return value
   handle_return_value(
     result = result,
     message = "Ensurance of renv/.gitignore state failed",
@@ -1326,7 +1566,14 @@ ensure_renv_gitignore_state <- function(strict = TRUE) {
 }
 
 #' @export
-ensure_rbuildignore_state <- function(strict = TRUE) {
+ensure_rbuildignore_state <- function(
+  strict = TRUE,
+  info = FALSE,
+  .trace = FALSE
+) {
+  # Show info
+  show_info(show = info)
+
   result <- try(
     c(
       "renv",
@@ -1358,7 +1605,17 @@ ensure_rbuildignore_state <- function(strict = TRUE) {
 # Ensure GitHub push ------------------------------------------------------
 
 #' @export
-ensure_github_push <- function(strict = TRUE) {
+ensure_github_push <- function(
+  strict = TRUE,
+  info = FALSE,
+  .trace = FALSE
+) {
+  # Show info
+  show_info(show = info)
+
+  # Show trace
+  show_trace(show = .trace)
+
   ensure_git_add_all(strict = strict)
   ensure_git_fetch(strict = strict)
   ensure_git_commit(

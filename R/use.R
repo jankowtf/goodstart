@@ -27,10 +27,12 @@ use_readme_rmd <- function(
     stringr::str_wrap()
 
   # GitHub information
-  if (usethis:::uses_github()) {
+  # if (usethis:::uses_github()) {
+  if (uses_github()) {
+  # TODO-20201111-1730-5: See TODO-20201111-1730-1
     data$github <- list(
-      owner = usethis:::github_owner(),
-      repo = usethis:::github_repo()
+      owner = github_owner(),
+      repo = github_repo()
     )
   }
 
@@ -41,7 +43,7 @@ use_readme_rmd <- function(
     data = data,
     ignore = usethis:::is_package(),
     open = open,
-    package = get_package_name()
+    package = gs_package_name()
   )
 
   invisible(new)
@@ -74,10 +76,13 @@ use_readme_md <- function(
     stringr::str_wrap()
 
   # GitHub information
-  if (usethis:::uses_github()) {
+  # if (usethis:::uses_github()) {
+  # stop("Intentional")
+  if (uses_github()) {
+    # TODO-20201111-1730-9: See TODO-20201111-1730-1
     data$github <- list(
-      owner = usethis:::github_owner(),
-      repo = usethis:::github_repo()
+      owner = github_owner(),
+      repo = github_repo()
     )
   }
 
@@ -88,7 +93,7 @@ use_readme_md <- function(
     data = data,
     ignore = usethis:::is_package(),
     open = open,
-    package = get_package_name()
+    package = gs_package_name()
   )
 
   invisible(new)
@@ -118,7 +123,7 @@ use_backlog_rmd <- function(open = rlang::is_interactive()) {
     data = data,
     ignore = usethis:::is_package(),
     open = open,
-    package = get_package_name()
+    package = gs_package_name()
   )
 
   if (new) {

@@ -8,7 +8,8 @@ ensure_readme_md(
   ensure_deps = TRUE,
   add_to_suggested = TRUE,
   open = rlang::is_interactive(),
-  strict = TRUE
+  strict = TRUE,
+  info = FALSE
 )
 }
 \arguments{

@@ -18,7 +18,9 @@ deps = "roxygen2md"
 ensure_roxygen_namespace(
   ensure_deps = TRUE,
   add_to_suggested = TRUE,
-  strict = TRUE
+  strict = TRUE,
+  info = FALSE,
+  .trace = FALSE
 )
 }
 \description{

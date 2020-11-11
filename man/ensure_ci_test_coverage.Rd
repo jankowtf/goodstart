@@ -8,7 +8,9 @@ ensure_ci_test_coverage(
   service = valid_ci_test_coverage_services("codecov"),
   ensure_deps = TRUE,
   add_to_suggested = TRUE,
-  strict = TRUE
+  strict = TRUE,
+  info = FALSE,
+  .trace = FALSE
 )
 }
 \arguments{

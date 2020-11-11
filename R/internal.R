@@ -16,16 +16,25 @@ handle_return_value <- function(
   message,
   strict = TRUE
 ) {
-  result_try <- !inherits(result, "try-error")
+  success <- !inherits(result, "try-error")
 
   if (!strict) {
-    result_try
+    success
   } else {
-    if (!result_try) {
-      message(result)
-      stop(message)
+    if (!success) {
+      message <- stringr::str_glue("{message}:\n{result}")
+      usethis::ui_stop(message)
     } else {
-      result_try
+      # If the result is logical then it is assumed that it is an indicator if
+      # something went wrong or not, thus it becomes the return value. For other
+      # types the 'sucess' is returned
+      if (is.logical(result)) {
+        result
+      } else {
+        success
+      }
+      # TODO-2010111-2036: Handling of return values still seems a bit to
+      # involved. Check if I could leverage existing packages/solutions for that
     }
   }
 }
@@ -53,13 +62,23 @@ handle_deps <- function(
   deps %>%
     purrr::map(function(.dep) {
       # Only check of install if not installed
-      out <- if (!usethis:::is_installed(.dep)) {
+      # out <- if (pkg_is_missing <- !usethis:::is_installed(.dep)) {
+      # out <- if (pkg_is_missing <- !is_package_loadable(.dep)) {
+      # Keep those as reference and as a reminder that requireNamespace() is NOT
+      # equivalent to checking via installed.packages() - at least not in all
+      # "contexts"
+
+      out <- if (pkg_is_missing <- !is_package_installed(.dep)) {
         if (!install_if_missing) {
           usethis:::check_installed(.dep)
         } else {
           suppressMessages(ensure_package(.dep))
         }
       }
+      # print("DEBUG: package missing")
+      # print(.dep)
+      # print(pkg_is_missing)
+      # Keep to facilitate troubleshooting
 
       # Add to DESCRIPTION file
       if (add_to_desc) {
@@ -82,4 +101,9 @@ most <- function(x, limit = 0.5) {
   attributes(out)$value <- value
 
   out
+}
+
+#' @importFrom fs path
+gs_project_data <- function(project = usethis::proj_get()) {
+  usethis:::project_data(base_path = project)
 }

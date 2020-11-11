@@ -6,7 +6,7 @@
 \usage{
 goodstart_config(
   use_github_user_name = "rappster",
-  use_github_repo_name = get_package_name(),
+  use_github_repo_name = gs_package_name(),
   use_github_auth = "ssh"
 )
 }

@@ -1,65 +1,3 @@
-when_testing_copy_template <- function(
-  template_name
-) {
-  from <- usethis:::find_template(template_name, "goodstart")
-  stopifnot(from %>% fs::file_exists())
-
-  to <- usethis::proj_path() %>%
-    fs::path(
-      "inst",
-      "templates"
-    ) %>%
-    fs::dir_create() %>%
-    fs::path(template_name)
-  fs::file_copy(from, to, overwrite = TRUE)
-  fs::file_exists(to)
-}
-
-when_testing_ensure_man_dir <- function() {
-  "man" %>%
-    usethis::proj_path() %>%
-    fs::dir_create()
-}
-
-when_testing_load_local_package <- function(
-  env = parent.frame()
-) {
-  devtools::load_all(usethis::proj_path())
-  withr::defer(devtools::unload(get_package_name()), env = env)
-}
-
-when_testing_ensure_example_function_and_unit_test <- function() {
-  path <- "R/foo.R"
-  foo <- path %>% usethis::proj_path()
-  foo %>% fs::file_create()
-
-  def <-
-    '#\' Hello world
-#\' @param x Hello world
-#\' @export
-#\' @example
-#\' foo()
-foo <- function(x = "hello world") x
-'
-  def %>% write(foo)
-
-  usethis::use_test("foo", open = FALSE)
-
-  TRUE
-}
-
-when_testing_namespace_default <- function() {
-  "exportPattern(\"^[[:alpha:]]+\")" %>%
-    write("NAMESPACE" %>% usethis::proj_path())
-}
-
-when_testing_local_options <- function(
-  env = parent.frame()
-) {
-  old <- options()
-  withr::defer(withr:::reset_options(old), envir = env)
-}
-
 # Expectations ------------------------------------------------------------
 
 expectations_messages_ <- function(messages, escape = TRUE) {
@@ -80,6 +18,24 @@ expectations_messages_ <- function(messages, escape = TRUE) {
 #   ) %>%
 #     expectations_messages_(escape = escape)
 # }
+
+expected_messages_add_lifecycle_to_package_doc <- function(escape = TRUE) {
+  pkg_name <- gs_package_name()
+  c(
+    "Added '@importFrom lifecycle deprecate_soft' to 'R/{pkg_name}-package.R'"
+  ) %>%
+    stringr::str_glue() %>%
+    expectations_messages_(escape = escape)
+}
+
+expected_messages_add_lifecycle_to_package_doc_if_already_added <- function(escape = TRUE) {
+  pkg_name <- gs_package_name()
+  c(
+    "'@importFrom lifecycle deprecate_soft' was already added to 'R/{pkg_name}-package.R'"
+  ) %>%
+    stringr::str_glue() %>%
+    expectations_messages_(escape = escape)
+}
 
 expected_messages_ensure_readme_rmd <- function(escape = FALSE) {
   c(
@@ -195,8 +151,8 @@ expectations_ensure_vignette <- function(escape = TRUE) {
     "Adding 'inst/doc' to '.gitignore'",
     "Creating 'vignettes/'",
     "Adding '*.html', '*.R' to 'vignettes/.gitignore'",
-    stringr::str_glue("Writing 'vignettes/{get_package_name()}.Rmd'"),
-    stringr::str_glue("Edit 'vignettes/{get_package_name()}.Rmd'")
+    stringr::str_glue("Writing 'vignettes/{gs_package_name()}.Rmd'"),
+    stringr::str_glue("Edit 'vignettes/{gs_package_name()}.Rmd'")
   ) %>%
     expectations_messages_(escape = escape)
 }
@@ -210,10 +166,11 @@ test_and_record_output <- function(
   fn <- rlang::enquo(fn)
   suppressWarnings(
     verify_output(path_temp, {
-      is <- rlang::eval_tidy(fn)
+    # expect_snapshot(path_temp, {
+      result <- rlang::eval_tidy(fn)
     })
   )
-  is
+  result
 }
 
 test_output <- function(

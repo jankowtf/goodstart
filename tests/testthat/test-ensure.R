@@ -30,7 +30,7 @@ test_that("Package templates exist", {
 context("Removing arbitrary files")
 
 test_that("Remove file if existing", {
-  pkg <- create_local_package()
+  pkg <- create_sandbox_package()
 
   path <- "test"
   fs::file_create(usethis::proj_path(path))
@@ -73,7 +73,7 @@ test_that("Remove file if existing", {
 })
 
 test_that("Remove file that isn't existing", {
-  pkg <- create_local_package()
+  pkg <- create_sandbox_package()
 
   path <- "tests/testthat/dummy.R"
 
@@ -108,7 +108,7 @@ test_that("Remove file that isn't existing", {
 context("Removing R/hello.R")
 
 test_that("Remove R/hello.R if existing", {
-  pkg <- create_local_package()
+  pkg <- create_sandbox_package()
 
   hello <- "R/hello.R" %>% usethis::proj_path()
   hello %>% fs::file_create()
@@ -140,7 +140,7 @@ test_that("Remove R/hello.R if existing", {
 })
 
 test_that("Remove R/hello.R if not existing", {
-  pkg <- create_local_package()
+  pkg <- create_sandbox_package()
 
   # Testing function itself
   path_temp <- tempfile()
@@ -174,7 +174,7 @@ test_that("Remove R/hello.R if not existing", {
 context("Removing man/hello.Rd")
 
 test_that("Remove 'man/hello.Rd' if existing", {
-  pkg <- create_local_package()
+  pkg <- create_sandbox_package()
 
   path <- "man/hello.Rd"
   hello <- path %>%
@@ -215,7 +215,7 @@ test_that("Remove 'man/hello.Rd' if existing", {
 })
 
 test_that("Remove 'man/hello.Rd' if not existing", {
-  pkg <- create_local_package()
+  pkg <- create_sandbox_package()
 
   # Testing function itself
   path_temp <- tempfile()
@@ -244,133 +244,12 @@ test_that("Remove 'man/hello.Rd' if not existing", {
   }
 })
 
-# Ensure README -----------------------------------------------------------
-
-context("Ensure README: rmd (default)")
-
-test_that("Ensure README if not existing (default -> rmd)", {
-  pkg <- create_local_package()
-  when_testing_copy_template("package-README")
-
-  readme <- usethis::proj_path("README.Rmd")
-  readme %>%
-    ensure_removed_file()
-  # readme %>%
-  #   fs::file_exists()
-
-  # Temporarily actually load the test package
-  when_testing_load_local_package()
-
-  # Testing function itself
-  path_temp <- tempfile()
-  current <- path_temp %>%
-    test_and_record_output(
-      ensure_readme(open = FALSE, strict = TRUE)
-    )
-
-  target <- TRUE
-  expect_identical(current, target)
-  expect_true(fs::file_exists(readme))
-
-  # Testing output/messages
-  result <- test_output(
-    path = path_temp,
-    expected = expected_messages_ensure_readme_rmd(escape = TRUE),
-    any_all = "all",
-    escape = FALSE
-  )
-  expect_true(!inherits(result$result, "try-error"))
-  if (inherits(result$result, "try-error")) {
-    print(result)
-  }
-})
-
-test_that("Ensure README if existing: rmd (default)", {
-  pkg <- create_local_package()
-  when_testing_copy_template("package-README")
-
-  readme <- usethis::proj_path("README.Rmd")
-  readme %>%
-    ensure_removed_file()
-
-  # Temporarily actually load the test package
-  when_testing_load_local_package()
-  ensure_readme(open = FALSE)
-
-  # Testing function itself
-  path_temp <- tempfile()
-  current <- path_temp %>%
-    test_and_record_output(
-      ensure_readme(open = FALSE)
-    )
-
-  target <- TRUE
-  expect_identical(current, target)
-  expect_true(fs::file_exists(readme))
-
-  # Testing output/messages:
-  result <- test_output(
-    path = path_temp,
-    expected = c(
-      "README.Rmd already exists"
-    ),
-    any_all = "all",
-    escape = TRUE
-  )
-  expect_true(!inherits(result$result, "try-error"))
-  if (inherits(result$result, "try-error")) {
-    print(result)
-  }
-})
-
-context("Ensure README: md")
-
-test_that("Ensure README.md if not existing", {
-  pkg <- create_local_package()
-  when_testing_copy_template("package-README.md")
-
-  readme <- usethis::proj_path("README.Rmd")
-  readme %>%
-    ensure_removed_file()
-  readme <- usethis::proj_path("README.md")
-  readme %>%
-    ensure_removed_file()
-  # readme %>%
-  #   fs::file_exists()
-
-  # Temporarily actually load the test package
-  when_testing_load_local_package()
-
-  # Testing function itself
-  path_temp <- tempfile()
-  current <- path_temp %>%
-    test_and_record_output(
-      ensure_readme(type = valid_readme_types("md"), open = FALSE, strict = TRUE)
-    )
-
-  target <- TRUE
-  expect_identical(current, target)
-  expect_true(fs::file_exists(readme))
-
-  # Testing output/messages
-  result <- test_output(
-    path = path_temp,
-    expected = expected_messages_ensure_readme_md(escape = TRUE),
-    any_all = "all",
-    escape = FALSE
-  )
-  expect_true(!inherits(result$result, "try-error"))
-  if (inherits(result$result, "try-error")) {
-    print(result)
-  }
-})
-
 # Ensure license ----------------------------------------------------------
 
 context("Ensure license")
 
 test_that("Ensure GPL-3 license", {
-  pkg <- create_local_package()
+  pkg <- create_sandbox_package()
 
   # Testing function itself
   path_temp <- tempfile()
@@ -402,7 +281,7 @@ test_that("Ensure GPL-3 license", {
 })
 
 test_that("Ensure MIT license", {
-  pkg <- create_local_package()
+  pkg <- create_sandbox_package()
 
   # Testing function itself
   path_temp <- tempfile()
@@ -436,7 +315,7 @@ test_that("Ensure MIT license", {
 
 test_that("Ensure invalid license", {
   skip("Not working as planned yet. Refactor 'test_and_record_output")
-  pkg <- create_local_package()
+  pkg <- create_sandbox_package()
 
   # Testing function itself
   path_temp <- tempfile()
@@ -471,7 +350,7 @@ test_that("Ensure invalid license", {
 context("Ensure dependency management: {renv} (default)")
 
 test_that("Ensure dependency management: {renv} (default)", {
-  pkg <- create_local_package()
+  pkg <- create_sandbox_package()
 
   # Testing function itself
   path_temp <- tempfile()
@@ -511,7 +390,7 @@ test_that("Ensure dependency management: {renv} (default)", {
 context("Dependency management: {renv} (explicit)")
 
 test_that("{renv} is activated", {
-  pkg <- create_local_package()
+  pkg <- create_sandbox_package()
 
   renv <- "renv" %>% usethis::proj_path()
   if (renv %>% fs::dir_exists()) {
@@ -551,7 +430,7 @@ test_that("{renv} is activated", {
 })
 
 test_that("{renv} is upgraded", {
-  pkg <- create_local_package()
+  pkg <- create_sandbox_package()
 
   renv <- "renv" %>% usethis::proj_path()
   if (renv %>% fs::dir_exists()) {
@@ -585,152 +464,18 @@ test_that("{renv} is upgraded", {
   }
 })
 
-# Ensure unit testing -----------------------------------------------------
 
-context("Ensure unit testing")
 
-test_that("Ensure unit testing with defaults", {
-  pkg <- create_local_package()
 
-  # Testing function itself
-  path_temp <- tempfile()
-  current <- path_temp %>%
-    test_and_record_output(
-      ensure_unit_testing()
-    )
 
-  target <- TRUE
-  expect_identical(current, target)
-  expect_true(fs::dir_exists(usethis::proj_path("tests/testthat")))
 
-  # Testing output/messages:
-  result <- test_output(
-    path = path_temp,
-    expected = c(
-      "Adding 'testthat' to Suggests field in DESCRIPTION",
-      "Creating 'tests/testthat/'",
-      "Writing 'tests/testthat.R'",
-      "Call `use_test()` to initialize a basic test file and open it for editing."
-    ),
-    any_all = "all",
-    escape = TRUE
-  )
-  expect_true(!inherits(result$result, "try-error"))
-  if (inherits(result$result, "try-error")) {
-    print(result)
-  }
-})
-
-test_that("Ensure {testthat}", {
-  pkg <- create_local_package()
-
-  # Testing function itself
-  path_temp <- tempfile()
-  current <- path_temp %>%
-    test_and_record_output(
-      ensure_unit_testing_testthat()
-    )
-
-  target <- TRUE
-  expect_identical(current, target)
-  expect_true(fs::dir_exists(usethis::proj_path("tests/testthat")))
-
-  # Testing output/messages:
-  result <- test_output(
-    path = path_temp,
-    expected = c(
-      "Adding 'testthat' to Suggests field in DESCRIPTION",
-      "Creating 'tests/testthat/'",
-      "Writing 'tests/testthat.R'",
-      "Call `use_test()` to initialize a basic test file and open it for editing."
-    ),
-    any_all = "all",
-    escape = TRUE
-  )
-  expect_true(!inherits(result$result, "try-error"))
-  if (inherits(result$result, "try-error")) {
-    print(result)
-  }
-})
-
-# Ensure unit testing: test coverage --------------------------------------
-
-context("Ensure unit testing: test coverage (local)")
-
-test_that("Ensure unit testing with defaults", {
-  pkg <- create_local_package()
-
-  ensure_unit_testing_testthat()
-  when_testing_ensure_example_function_and_unit_test()
-
-  # Testing function itself
-  path_temp <- tempfile()
-  current <- path_temp %>%
-    test_and_record_output(
-      ensure_unit_testing_test_coverage()
-    )
-
-  target <- TRUE
-  expect_identical(current, target)
-
-  # Testing output/messages:
-  result <- test_output(
-    path = path_temp,
-    expected = expected_messages_ensure_unit_testing_test_coverage(),
-    any_all = "all"
-  )
-  expect_true(!inherits(result$result, "try-error"))
-  if (inherits(result$result, "try-error")) {
-    print(result)
-  }
-})
-
-# Ensure unit testing: example function and test --------------------------
-
-context("Ensure unit testing: example fun and test")
-
-test_that("foo.R and test-foo.R", {
-  pkg <- create_local_package()
-
-  # Testing function itself
-  path_temp <- tempfile()
-  current <- path_temp %>%
-    test_and_record_output(
-      when_testing_ensure_example_function_and_unit_test()
-    )
-
-  target <- TRUE
-  expect_identical(current, target)
-
-  foo_test <- usethis::proj_path("tests/testthat/test-foo.R")
-  expect_true(foo_test %>% fs::file_access())
-
-  # Testing output/messages:
-  result <- test_output(
-    path = path_temp,
-    expected = c(
-      "Adding 'testthat' to Suggests field in DESCRIPTION",
-      "Creating 'tests/testthat/'",
-      "Writing 'tests/testthat.R'",
-      "Call `use_test()` to initialize a basic test file and open it for editing.",
-      " Writing 'tests/testthat/test-foo.R'",
-      "Edit 'tests/testthat/test-foo.R'"
-    ),
-    any_all = "all",
-    escape = TRUE
-  )
-  expect_true(!inherits(result$result, "try-error"))
-  if (inherits(result$result, "try-error")) {
-    print(result)
-  }
-})
 
 # Ensure NEWS -------------------------------------------------------------
 
 context("Ensure NEWS")
 
 test_that("Ensure NEWS.md", {
-  pkg <- create_local_package()
+  pkg <- create_sandbox_package()
 
   # Testing function itself
   path_temp <- tempfile()
@@ -759,7 +504,7 @@ test_that("Ensure NEWS.md", {
 })
 
 test_that("Ensure NEWS.md if already existing", {
-  pkg <- create_local_package()
+  pkg <- create_sandbox_package()
 
   ensure_news_md(open = FALSE)
 
@@ -790,72 +535,13 @@ test_that("Ensure NEWS.md if already existing", {
   }
 })
 
-# Ensure BACKLOG ----------------------------------------------------------
-
-context("Ensure BACKLOG.Rmd")
-
-test_that("Ensure BACKLOG.Rmd: bare", {
-  skip("Keep for reference but doesn't need to run anymore")
-  if (fs::file_exists(usethis::proj_path("BACKLOG.Rmd"))) {
-    usethis::proj_path("BACKLOG.Rmd") %>%
-      fs::file_delete()
-  }
-
-  target <- TRUE
-
-  # withr::with(
-  #   "goodstarttest",
-  #   usethis:::find_template("package-BACKLOG", get_package_name())
-  # )
-  devtools::load_all(usethis::proj_path())
-  on.exit(devtools::unload("goodstarttest"))
-
-  show_failure(expect_identical(ensure_backlog_rmd(), target))
-  expect_true(fs::file_exists(usethis::proj_path("BACKLOG.Rmd")))
-})
-
-test_that("Ensure BACKLOG.Rmd", {
-  pkg <- create_local_package()
-
-  when_testing_copy_template("package-BACKLOG")
-  when_testing_load_local_package()
-
-  # Testing function itself
-  path_temp <- tempfile()
-  current <- path_temp %>%
-    test_and_record_output(
-      ensure_backlog_rmd(open = FALSE)
-    )
-
-  target <- TRUE
-  backlog <- "BACKLOG.Rmd" %>% usethis::proj_path()
-  # names(target) <- backlog
-  expect_identical(current, target)
-  expect_true(backlog %>% fs::file_exists())
-
-  # Testing output/messages
-  result <- test_output(
-    path = path_temp,
-    expected = c(
-      "Writing 'BACKLOG.Rmd'",
-      "Adding '^BACKLOG\\\\.Rmd$' to '.Rbuildignore'",
-      "Created BACKLOG.Rmd"
-    ),
-    any_all = "all",
-    escape = TRUE
-  )
-  expect_true(!inherits(result$result, "try-error"))
-  if (inherits(result$result, "try-error")) {
-    print(result)
-  }
-})
 
 # Ensure roxygen ----------------------------------------------------------
 
 context("Ensure roxygen")
 
 test_that("Enable roxygen", {
-  pkg <- create_local_package()
+  pkg <- create_sandbox_package()
 
   # Testing function itself
   path_temp <- tempfile()
@@ -891,7 +577,7 @@ test_that("Enable roxygen", {
 context("Ensure Markdown in {roxygen2} code")
 
 test_that("Enable markdown in roxygen2 code", {
-  pkg <- create_local_package()
+  pkg <- create_sandbox_package()
 
   # Testing function itself
   path_temp <- tempfile()
@@ -938,7 +624,7 @@ test_that("Enable markdown in roxygen2 code", {
 context("NAMESPACE: remove default file")
 
 test_that("Remove default NAMESPACE if existing", {
-  pkg <- create_local_package()
+  pkg <- create_sandbox_package()
 
   when_testing_namespace_default()
 
@@ -968,7 +654,7 @@ test_that("Remove default NAMESPACE if existing", {
 })
 
 test_that("Remove default NAMESPACE if not existing", {
-  pkg <- create_local_package()
+  pkg <- create_sandbox_package()
 
   "exportPattern(\"^[[:alpha:]]+\")" %>%
     write(usethis::proj_path("NAMESPACE"))
@@ -1001,7 +687,7 @@ test_that("Remove default NAMESPACE if not existing", {
 })
 
 test_that("Remove default NAMESPACE if not existing (2)", {
-  pkg <- create_local_package()
+  pkg <- create_sandbox_package()
 
   # Testing function itself
   path_temp <- tempfile()
@@ -1028,110 +714,14 @@ test_that("Remove default NAMESPACE if not existing (2)", {
   }
 })
 
-# NAMESPACE: roxygen-based ------------------------------------------------
 
-context("NAMESPACE: roxygen2-based")
-
-test_that("Ensure {roxygen2}-based NAMESPACE file", {
-  pkg <- create_local_package()
-
-  "exportPattern(\"^[[:alpha:]]+\")" %>%
-    write("NAMESPACE" %>% usethis::proj_path())
-  ensure_removed_namespace_default()
-
-  # Testing function itself
-  path_temp <- tempfile()
-  current <- path_temp %>%
-    test_and_record_output(
-      ensure_roxygen_namespace()
-    )
-
-  target <- TRUE
-  expect_identical(current, target)
-
-  # Check NAMESPACE content
-  namespace <- "NAMESPACE" %>% usethis::proj_path()
-  expect_true(namespace %>% fs::file_exists())
-  expect_true(
-    namespace %>%
-      readLines() %>%
-      stringr::str_detect("# Generated by roxygen2: do not edit by hand") %>%
-      any()
-  )
-
-  # Testing output/messages
-  result <- test_output(
-    path = path_temp,
-    expected = expectations_ensure_roxygen_namespace(),
-    any_all = "any"
-  )
-  expect_true(!inherits(result$result, "try-error"))
-  if (inherits(result$result, "try-error")) {
-    print(result)
-  }
-
-  # Double check default NAMESPACE handling:
-  temp_file <- tempfile()
-  suppressWarnings(
-    verify_output(temp_file, {
-      current <- ensure_removed_namespace_default()
-    })
-  )
-
-  target <- FALSE
-  expect_identical(current, target)
-
-  is_messages <- readLines(temp_file) %>%
-    stringr::str_subset("Message")
-  should_messages <- "NAMESPACE generated by {roxygen2}" %>%
-    handle_regex_escaping()
-  check_results <- should_messages %>%
-    purrr::map_lgl(
-      ~stringr::str_detect(is_messages, .x) %>%
-        any()
-    )
-  expect_true(all(check_results))
-  # expect_true(any(check_results))
-})
-
-test_that("Ensure {roxygen2}-based NAMESPACE file if already existing", {
-  pkg <- create_local_package()
-
-  # Testing function itself
-  path_temp <- tempfile()
-  current <- path_temp %>%
-    test_and_record_output(
-      ensure_roxygen_namespace()
-    )
-
-  target <- TRUE
-  expect_identical(current, target)
-
-  # Check NAMESPACE content:
-  namespace <- readLines(usethis::proj_path("NAMESPACE"))
-  expect_true(namespace %>%
-      stringr::str_detect("# Generated by roxygen2: do not edit by hand") %>%
-      any()
-  )
-
-  # Testing output/messages
-  result <- test_output(
-    path = path_temp,
-    expected = stringr::str_glue("Loading {get_package_name()}"),
-    any_all = "all"
-  )
-  expect_true(!inherits(result$result, "try-error"))
-  if (inherits(result$result, "try-error")) {
-    print(result)
-  }
-})
 
 # Ensure {lifecycle} ------------------------------------------------------
 
 context("Ensure {lifecycle}")
 
 test_that("{lifecycle} exists", {
-  pkg <- create_local_package()
+  pkg <- create_sandbox_package()
 
   when_testing_copy_template("package-README")
   when_testing_load_local_package()
@@ -1148,7 +738,7 @@ test_that("{lifecycle} exists", {
   expect_identical(current, target)
 
   # Check for content inside R/{package_name}-package.R:
-  package_name <- get_package_name()
+  package_name <- gs_package_name()
   file_name <- stringr::str_glue("{package_name}-package.R")
   expect_true(
     usethis::proj_path("R", file_name) %>%
@@ -1203,31 +793,12 @@ test_that("{lifecycle} exists", {
   # TODO-20200503T0115: Align testing {lifecycle} behavior when README.Rmd exists
 })
 
-# GitHub ------------------------------------------------------------------
-
-context("Ensure GitHub")
-
-test_that("GitHub is set up correctly", {
-  pkg <- create_local_package()
-
-  ensure_env_vars(
-    list(
-      GITHUB_USERNAME = "rappster"
-    )
-  )
-
-  # current <- ensure_github()
-  current <- ensure_github(strict = TRUE)
-  target <- TRUE
-  expect_identical(current, target)
-})
-
 # Ensure CI platform ------------------------------------------------------
 
 context("Ensure CI platform")
 
 test_that("Ensure CI platform: GitHub Actions (default)", {
-  pkg <- create_local_package()
+  pkg <- create_sandbox_package()
 
   # Ensure README
   when_testing_copy_template("package-README")
@@ -1283,7 +854,7 @@ test_that("Ensure CI platform: GitHub Actions (default)", {
 context("Ensure CI test coverage service")
 
 test_that("CI test coverage", {
-  pkg <- create_local_package()
+  pkg <- create_sandbox_package()
 
   ensure_env_vars(
     list(
@@ -1338,7 +909,7 @@ test_that("CI test coverage", {
 context("Ensure vignette setup")
 
 test_that("Vignette setup", {
-  pkg <- create_local_package()
+  pkg <- create_sandbox_package()
 
   # Testing function itself
   path_temp <- tempfile()
@@ -1367,7 +938,7 @@ test_that("Vignette setup", {
 context("Ensure {pkgdown}")
 
 test_that("{pkgdown}", {
-  pkg <- create_local_package()
+  pkg <- create_sandbox_package()
 
   # Testing function itself
   path_temp <- tempfile()
@@ -1392,7 +963,7 @@ test_that("{pkgdown}", {
 })
 
 test_that("{pkgdown} with prior GitHub Actions", {
-  pkg <- create_local_package()
+  pkg <- create_sandbox_package()
 
   ensure_env_vars(
     list(
@@ -1429,7 +1000,7 @@ test_that("{pkgdown} with prior GitHub Actions", {
 context("Ensure knitted README.Rmd")
 
 test_that("Knit README", {
-  pkg <- create_local_package()
+  pkg <- create_sandbox_package()
 
   when_testing_load_local_package()
   when_testing_copy_template("package-README")
@@ -1457,7 +1028,7 @@ test_that("Knit README", {
 context("Ensure correct state of ignore files")
 
 test_that("renv/.gitignore", {
-  pkg <- create_local_package()
+  pkg <- create_sandbox_package()
 
   ensure_renv_active()
 
@@ -1478,7 +1049,7 @@ test_that("renv/.gitignore", {
 })
 
 test_that(".Rbuildignore", {
-  pkg <- create_local_package()
+  pkg <- create_sandbox_package()
 
   # Testing function itself
   path_temp <- tempfile()
