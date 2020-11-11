@@ -43,7 +43,8 @@ use_readme_rmd <- function(
     data = data,
     ignore = usethis:::is_package(),
     open = open,
-    package = gs_package_name()
+    # package = gs_package_name()
+    package = "goodstart"
   )
 
   invisible(new)
