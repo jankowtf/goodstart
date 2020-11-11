@@ -6,17 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>#' @importFrom roxygen2md roxygen2md
-ensure_roxygen2md &lt;- function(
-ensure_deps = TRUE,
-add_to_suggested = TRUE
-) 
-ensure_generic(
-ensure_deps = ensure_deps,
-add_to_suggested = add_to_suggested,
-fn = roxygen2md::roxygen2md(),
-deps = "roxygen2md"
-) — ensure_roxygen_namespace • goodstart</title>
+<title>Generic function for ensuring things that {goodstart} can handle — ensure_generic • goodstart</title>
 
 
 <!-- jquery -->
@@ -49,28 +39,8 @@ deps = "roxygen2md"
 
 
 
-<meta property="og:title" content="#' @importFrom roxygen2md roxygen2md
-ensure_roxygen2md &lt;- function(
-ensure_deps = TRUE,
-add_to_suggested = TRUE
-) 
-ensure_generic(
-ensure_deps = ensure_deps,
-add_to_suggested = add_to_suggested,
-fn = roxygen2md::roxygen2md(),
-deps = "roxygen2md"
-) — ensure_roxygen_namespace" />
-<meta property="og:description" content="#' @importFrom roxygen2md roxygen2md
-ensure_roxygen2md &amp;lt;- function(
-ensure_deps = TRUE,
-add_to_suggested = TRUE
-) 
-ensure_generic(
-ensure_deps = ensure_deps,
-add_to_suggested = add_to_suggested,
-fn = roxygen2md::roxygen2md(),
-deps = &quot;roxygen2md&quot;
-)" />
+<meta property="og:title" content="Generic function for ensuring things that {goodstart} can handle — ensure_generic" />
+<meta property="og:description" content="Generic function for ensuring things that {goodstart} can handle" />
 
 
 
@@ -133,43 +103,34 @@ deps = &quot;roxygen2md&quot;
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>#' @importFrom roxygen2md roxygen2md
-ensure_roxygen2md &lt;- function(
-ensure_deps = TRUE,
-add_to_suggested = TRUE
-) 
-ensure_generic(
-ensure_deps = ensure_deps,
-add_to_suggested = add_to_suggested,
-fn = roxygen2md::roxygen2md(),
-deps = "roxygen2md"
-)</h1>
+    <h1>Generic function for ensuring things that <code>{goodstart}</code> can handle</h1>
     
-    <div class="hidden name"><code>ensure_roxygen_namespace.Rd</code></div>
+    <div class="hidden name"><code>ensure_generic.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>#' @importFrom roxygen2md roxygen2md
-ensure_roxygen2md &lt;- function(
-ensure_deps = TRUE,
-add_to_suggested = TRUE
-) 
-ensure_generic(
-ensure_deps = ensure_deps,
-add_to_suggested = add_to_suggested,
-fn = roxygen2md::roxygen2md(),
-deps = "roxygen2md"
-)</p>
+    <p>Generic function for ensuring things that <code>{goodstart}</code> can handle</p>
     </div>
 
-    <pre class="usage"><span class='fu'>ensure_roxygen_namespace</span><span class='op'>(</span>
+    <pre class="usage"><span class='fu'>ensure_generic</span><span class='op'>(</span>
   ensure_deps <span class='op'>=</span> <span class='cn'>TRUE</span>,
   add_to_suggested <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  strict <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  info <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  .trace <span class='op'>=</span> <span class='cn'>FALSE</span>
+  <span class='va'>fn</span>,
+  fn_dep <span class='op'>=</span> <span class='cn'>NULL</span>,
+  deps <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/character.html'>character</a></span><span class='op'>(</span><span class='op'>)</span>,
+  deps_type <span class='op'>=</span> <span class='st'>"Suggests"</span>,
+  path <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/character.html'>character</a></span><span class='op'>(</span><span class='op'>)</span>,
+  requires_restart <span class='op'>=</span> <span class='cn'>FALSE</span>
 <span class='op'>)</span></pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>requires_restart</th>
+      <td></td>
+    </tr>
+    </table>
 
 
   </div>

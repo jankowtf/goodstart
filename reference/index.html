@@ -71,19 +71,13 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">goodstart</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9004</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9007</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../articles/goodstart.html">Get started</a>
 </li>
 <li>
@@ -134,19 +128,307 @@
       <tr>
         
         <td>
+          <p><code><a href="add_lifecycle_to_package_doc.html">add_lifecycle_to_package_doc()</a></code> </p>
+        </td>
+        <td><p>Add lifecycle components to package doc file</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="ask.html">ask()</a></code> </p>
+        </td>
+        <td><p>Ask user preferences</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="block_append.html">block_append()</a></code> </p>
+        </td>
+        <td><p>Append block</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="block_create.html">block_create()</a></code> </p>
+        </td>
+        <td><p>Create block</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="block_find.html">block_find()</a></code> </p>
+        </td>
+        <td><p>Find block between start and end identifiers</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="block_get.html">block_get()</a></code> </p>
+        </td>
+        <td><p>Title</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="create_sandbox_package.html">create_sandbox_package()</a></code> </p>
+        </td>
+        <td><p>Create a sandbox package</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="ensure_backlog_rmd.html">ensure_backlog_rmd()</a></code> </p>
+        </td>
+        <td><p>Ensure BACKLOG.Rmd</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="ensure_ci.html">ensure_ci()</a></code> </p>
+        </td>
+        <td><p>Ensure Continuous Integration</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="ensure_ci_test_coverage.html">ensure_ci_test_coverage()</a></code> </p>
+        </td>
+        <td><p>Ensure Continuous Integration test coverage</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="ensure_ci_test_coverage_.html">ensure_ci_test_coverage_()</a></code> </p>
+        </td>
+        <td><p>Ensure Continuous Integration test coverage</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="ensure_ci_test_coverage_link.html">ensure_ci_test_coverage_link()</a></code> </p>
+        </td>
+        <td><p>Ensure CI test coverage service is linked to CI platform</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="ensure_dependency_management.html">ensure_dependency_management()</a></code> </p>
+        </td>
+        <td><p>Ensure dependency management</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="ensure_generic.html">ensure_generic()</a></code> </p>
+        </td>
+        <td><p>Generic function for ensuring things that <code>{goodstart}</code> can handle</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="ensure_license.html">ensure_license()</a></code> </p>
+        </td>
+        <td><p>Ensure license</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="ensure_readme.html">ensure_readme()</a></code> </p>
+        </td>
+        <td><p>Ensure README</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="ensure_readme_md.html">ensure_readme_md()</a></code> </p>
+        </td>
+        <td><p>Ensure README.md exists and is populated based on project data</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="ensure_readme_rmd.html">ensure_readme_rmd()</a></code> </p>
+        </td>
+        <td><p>Ensure README.Rmd exists and is populated based on project data</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="ensure_removed_namespace_default.html">ensure_removed_namespace_default()</a></code> </p>
+        </td>
+        <td><p>Ensure that default NAMESPACE is removed</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="ensure_renv_active.html">ensure_renv_active()</a></code> </p>
+        </td>
+        <td><p>Ensure <code>{renv}</code> project is activated</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="ensure_renv_upgraded.html">ensure_renv_upgraded()</a></code> </p>
+        </td>
+        <td><p>Ensure <code>{renv}</code> project is upgraded</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="ensure_roxygen.html">ensure_roxygen()</a></code> </p>
+        </td>
+        <td><p>Ensure Roxygen documentation via <code>{roxygen2}</code> is enabled</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="ensure_roxygen_namespace.html">ensure_roxygen_namespace()</a></code> </p>
         </td>
         <td><p>#' @importFrom roxygen2md roxygen2md
 ensure_roxygen2md &lt;- function(
-install_deps_if_missing = TRUE,
-add_to_description_suggests = TRUE
+ensure_deps = TRUE,
+add_to_suggested = TRUE
 ) 
 ensure_generic(
-install_deps_if_missing = install_deps_if_missing,
-add_to_description_suggests = add_to_description_suggests,
-fn = roxygen2md::roxygen2md,
+ensure_deps = ensure_deps,
+add_to_suggested = add_to_suggested,
+fn = roxygen2md::roxygen2md(),
 deps = "roxygen2md"
 )</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="ensure_unit_testing.html">ensure_unit_testing()</a></code> </p>
+        </td>
+        <td><p>Ensure unit testing package</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="ensure_unit_testing_test_coverage.html">ensure_unit_testing_test_coverage()</a></code> </p>
+        </td>
+        <td><p>Ensure test coverage package <code>{covr}</code></p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="ensure_unit_testing_test_coverage_covr.html">ensure_unit_testing_test_coverage_covr()</a></code> </p>
+        </td>
+        <td><p>Ensure test coverage package <code>{covr}</code></p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="ensure_unit_testing_testthat.html">ensure_unit_testing_testthat()</a></code> </p>
+        </td>
+        <td><p>Ensure <code>{testthat}</code> infrastructure</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="envvy__deparse.html">envvy__deparse()</a></code> </p>
+        </td>
+        <td><p>Deparse environment variables</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="envvy__parse.html">envvy__parse()</a></code> </p>
+        </td>
+        <td><p>Parse environment variables</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="exists_goodstart_config.html">exists_goodstart_config()</a></code> </p>
+        </td>
+        <td><p>Check existence of config file</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="flip_values_and_names.html">flip_values_and_names()</a></code> </p>
+        </td>
+        <td><p>Flip values and names</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="goodstart_config.html">goodstart_config()</a></code> </p>
+        </td>
+        <td><p>Config for <code>{goodstart}</code></p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="list_goodstart_configs.html">list_goodstart_configs()</a></code> </p>
+        </td>
+        <td><p>List available config file</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="mimick_rstudio_package.html">mimick_rstudio_package()</a></code> </p>
+        </td>
+        <td><p>Mimick R package project as created from within RStudio</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="not_in.html">not_in()</a></code> </p>
+        </td>
+        <td><p>Check if not in set</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="read_goodstart_config.html">read_goodstart_config()</a></code> </p>
+        </td>
+        <td><p>Read config for <code>{goodstart}</code></p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="read_utf8.html">read_utf8()</a></code> </p>
+        </td>
+        <td><p>Read UTF-8</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="skeval__compute_key.html">skeval__compute_key()</a></code> </p>
+        </td>
+        <td><p>Compute hash key for key-value store</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="skeval__create_value.html">skeval__create_value()</a></code> </p>
+        </td>
+        <td><p>Create key-value pair</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="skeval__ensure_store.html">skeval__ensure_store()</a></code> </p>
+        </td>
+        <td><p>Ensure key-value store</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="skeval__exists_value.html">skeval__exists_value()</a></code> </p>
+        </td>
+        <td><p>Check if hash key exists in key-value store</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="skeval__read_value.html">skeval__read_value()</a></code> </p>
+        </td>
+        <td><p>Read value from key-value store</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="skeval__reset_store.html">skeval__reset_store()</a></code> </p>
+        </td>
+        <td><p>Reset key-value store</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="skeval__store_name.html">skeval__store_name()</a></code> </p>
+        </td>
+        <td><p>Get key-value store name</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="use_readme_md.html">use_readme_md()</a></code> </p>
+        </td>
+        <td><p>Use custom README.md template</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="use_readme_rmd.html">use_readme_rmd()</a></code> </p>
+        </td>
+        <td><p>Use custom README.Rmd template</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="use_roxygen.html">use_roxygen()</a></code> </p>
+        </td>
+        <td><p>Use Roxygen documenation via <code>{roxygen2}</code> `</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="write_goodstart_config.html">write_goodstart_config()</a></code> </p>
+        </td>
+        <td><p>Write config for <code>{goodstart}</code></p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="write_utf8.html">write_utf8()</a></code> </p>
+        </td>
+        <td><p>Write UTF-8</p></td>
       </tr>
     </tbody>
     </table>
@@ -166,7 +448,7 @@ deps = "roxygen2md"
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>
