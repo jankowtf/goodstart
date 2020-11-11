@@ -29,6 +29,7 @@ Imports:
     usethis,
     here,
     knitr,
-    stringr
+    stringr,
+    gert
 RdMacros: lifecycle
 VignetteBuilder: knitr
